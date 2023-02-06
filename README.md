@@ -1,2 +1,2 @@
-# animal-tracker
-RESTful API for tracking animals
+# animal-tracker-service
+Animal Tracker RESTful API
