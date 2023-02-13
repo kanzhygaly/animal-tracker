@@ -1,0 +1,12 @@
+version: '3'
+services:
+  postgres-db:
+    container_name: postgres-db
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: atUser
+      POSTGRES_PASSWORD: Password123
+      POSTGRES_DB: animal-tracker

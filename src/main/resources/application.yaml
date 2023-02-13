@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5435/animal-tracker
+    username: atUser
+    password: Password123
+    driverClassName: org.postgresql.Driver
