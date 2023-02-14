@@ -4,3 +4,19 @@ spring:
     username: atUser
     password: Password123
     driverClassName: org.postgresql.Driver
+
+server:
+  port: 8080
+  servlet:
+    contextPath: /animal-tracker-api
+  tomcat:
+    accesslog:
+      directory: logs
+      enabled: true
+      file-date-format: dd-MM-yyyy
+      pattern: combined
+      prefix: access
+      rename-on-rotate: true
+      rotate: true
+      suffix: .log
+    basedir: .

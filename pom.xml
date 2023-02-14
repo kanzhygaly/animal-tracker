@@ -8,21 +8,24 @@
         <version>3.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>kz.yerakh</groupId>
     <artifactId>animal-tracker-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>animal-tracker-service</name>
     <description>Animal Tracker RESTful API</description>
 
     <properties>
         <java.version>19</java.version>
+
+        <docker-maven-plugin.version>0.41.0</docker-maven-plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -93,39 +96,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.41.0</version>
-                <configuration>
-                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
-                    <containerNamePattern>%a-%t</containerNamePattern>
-                    <watchInterval>500</watchInterval>
-                    <logDate>default</logDate>
-                    <verbose>true</verbose>
-
-                    <images>
-                        <image>
-                            <name>postgres:11</name>
-                            <alias>it-database</alias>
-                            <run>
-                                <ports>
-                                    <port>5434:5432</port>
-                                </ports>
-                                <env>
-                                    <POSTGRES_USER>test_user</POSTGRES_USER>
-                                    <POSTGRES_PASSWORD>test_pass</POSTGRES_PASSWORD>
-                                    <POSTGRES_DB>test_db</POSTGRES_DB>
-                                </env>
-                                <wait>
-                                    <log>PostgreSQL init process complete</log>
-                                    <time>120000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
-                                <log>
-                                    <enabled>true</enabled>
-                                </log>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
+                <version>${docker-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>build-docker-container</id>
@@ -138,9 +109,34 @@
                         <id>start</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>build</goal>
                             <goal>start</goal>
                         </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>postgres:11</name>
+                                    <alias>it-database</alias>
+                                    <run>
+                                        <ports>
+                                            <port>5434:5432</port>
+                                        </ports>
+                                        <env>
+                                            <POSTGRES_USER>test_user</POSTGRES_USER>
+                                            <POSTGRES_PASSWORD>test_pass</POSTGRES_PASSWORD>
+                                            <POSTGRES_DB>test_db</POSTGRES_DB>
+                                        </env>
+                                        <wait>
+                                            <log>PostgreSQL init process complete</log>
+                                            <time>120000</time>
+                                            <shutdown>500</shutdown>
+                                        </wait>
+                                        <log>
+                                            <enabled>true</enabled>
+                                        </log>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>stop</id>
