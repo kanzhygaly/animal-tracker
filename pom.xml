@@ -11,7 +11,7 @@
     <groupId>kz.yerakh</groupId>
     <artifactId>animal-tracker-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>animal-tracker-service</name>
     <description>Animal Tracker RESTful API</description>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <!--            <scope>runtime</scope>-->
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -95,9 +95,15 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.41.0</version>
                 <configuration>
+                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+                    <containerNamePattern>%a-%t</containerNamePattern>
+                    <watchInterval>500</watchInterval>
+                    <logDate>default</logDate>
+                    <verbose>true</verbose>
+
                     <images>
                         <image>
-                            <name>postgres:9.4</name>
+                            <name>postgres:11</name>
                             <alias>it-database</alias>
                             <run>
                                 <ports>
@@ -109,14 +115,25 @@
                                     <POSTGRES_DB>test_db</POSTGRES_DB>
                                 </env>
                                 <wait>
-                                    <log>database system is ready to accept connections</log>
-                                    <time>20000</time>
+                                    <log>PostgreSQL init process complete</log>
+                                    <time>120000</time>
+                                    <shutdown>500</shutdown>
                                 </wait>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
                             </run>
                         </image>
                     </images>
                 </configuration>
                 <executions>
+                    <execution>
+                        <id>build-docker-container</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>start</id>
                         <phase>pre-integration-test</phase>
