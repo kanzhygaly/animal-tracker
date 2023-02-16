@@ -1,12 +1,35 @@
-version: '3'
+version: '3.1'
 services:
   postgres-db:
     container_name: postgres-db
     image: postgres:latest
     restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - spring-postgres
     ports:
       - "5435:5432"
     environment:
       POSTGRES_USER: atUser
       POSTGRES_PASSWORD: Password123
       POSTGRES_DB: animal-tracker
+
+  animal-tracker-service:
+    container_name: animal-tracker-service
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5435/animal-tracker
+      - SPRING_DATASOURCE_USERNAME=atUser
+      - SPRING_DATASOURCE_PASSWORD=Password123
+    networks:
+      - spring-postgres
+
+volumes:
+  db-data:
+networks:
+  spring-postgres:

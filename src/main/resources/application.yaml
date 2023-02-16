@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5435/animal-tracker
-    username: atUser
-    password: Password123
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5435/animal-tracker}
+    username: ${SPRING_DATASOURCE_USERNAME:atUser}
+    password: ${SPRING_DATASOURCE_PASSWORD:Password123}
     driverClassName: org.postgresql.Driver
 
 server:
