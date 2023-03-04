@@ -14,7 +14,7 @@
     <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>animal-tracker-service</name>
-    <description>Animal Tracker RESTful API</description>
+    <description>Animal Tracker REST API</description>
 
     <properties>
         <java.version>19</java.version>
@@ -40,6 +40,10 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -80,6 +84,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -92,19 +109,23 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*IntegrationTest.java</include>
+                    </includes>
+                    <environmentVariables>
+                        <it-database.port>${it-database.port}</it-database.port>
+                    </environmentVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker-maven-plugin.version}</version>
+                <configuration>
+                    <dockerHost>http://localhost:2375</dockerHost>
+                </configuration>
                 <executions>
-                    <execution>
-                        <id>build-docker-container</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>start</id>
                         <phase>pre-integration-test</phase>
@@ -114,11 +135,11 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>postgres:11</name>
+                                    <name>postgres:latest</name>
                                     <alias>it-database</alias>
                                     <run>
                                         <ports>
-                                            <port>5434:5432</port>
+                                            <port>it-database.port:5432</port>
                                         </ports>
                                         <env>
                                             <POSTGRES_USER>test_user</POSTGRES_USER>
