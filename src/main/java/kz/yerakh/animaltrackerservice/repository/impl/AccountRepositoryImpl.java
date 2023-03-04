@@ -16,14 +16,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccountRepositoryImpl implements AccountRepository {
 
-    private static final String GET_ACCOUNT_BY_ID = "SELECT * FROM account WHERE account_id = ?";
-    private static final String GET_ACCOUNT_BY_EMAIL = "SELECT * FROM account WHERE email = ?";
-    private static final String SELECT = "SELECT * FROM account";
+    private static final String GET_ACCOUNT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
+    private static final String GET_ACCOUNT_BY_EMAIL = "SELECT account_id, first_name, last_name, email FROM account WHERE email = ?";
+    private static final String SELECT = "SELECT account_id, first_name, last_name, email FROM account";
     private static final String WHERE = " WHERE";
+    private static final String AND = " AND";
     private static final String LIKE_FIRST_NAME = " LOWER(first_name) LIKE LOWER(?)";
-    private static final String LIKE_NAME = " LOWER(last_name) LIKE LOWER(?)";
+    private static final String LIKE_LAST_NAME = " LOWER(last_name) LIKE LOWER(?)";
     private static final String LIKE_EMAIL = " LOWER(email) LIKE LOWER(?)";
-    private static final String LIMIT_AND_OFFSET = " LIMIT = ? OFFSET = ?";
+    private static final String LIMIT_AND_OFFSET = " ORDER BY account_id LIMIT ? OFFSET ?";
     private static final String INSERT = "INSERT INTO account(first_name, last_name, email, password) VALUES(?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE account SET first_name = ?, last_name = ?, email = ?, password = ? " +
             "WHERE account_id = ?";
@@ -40,10 +41,16 @@ public class AccountRepositoryImpl implements AccountRepository {
             params.add(accountSearchCriteria.firstName());
         }
         if (accountSearchCriteria.lastName() != null && !accountSearchCriteria.lastName().isEmpty()) {
-            where.append(LIKE_NAME);
+            if (where.length() > 6) {
+                where.append(AND);
+            }
+            where.append(LIKE_LAST_NAME);
             params.add(accountSearchCriteria.lastName());
         }
         if (accountSearchCriteria.email() != null && !accountSearchCriteria.email().isEmpty()) {
+            if (where.length() > 6) {
+                where.append(AND);
+            }
             where.append(LIKE_EMAIL);
             params.add(accountSearchCriteria.email());
         }
@@ -56,17 +63,17 @@ public class AccountRepositoryImpl implements AccountRepository {
         params.add(accountSearchCriteria.size());
         params.add(accountSearchCriteria.from());
 
-        return jdbcTemplate.queryForList(query.toString(), Account.class, params.toArray());
+        return jdbcTemplate.query(query.toString(), new Account.AccountRowMapper(), params.toArray());
     }
 
     @Override
     public Optional<Account> findById(Integer accountId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, Account.class, accountId));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, new Account.AccountRowMapper(), accountId));
     }
 
     @Override
     public Optional<Account> findByEmail(String email) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_EMAIL, Account.class, email));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_EMAIL, new Account.AccountRowMapper(), email));
     }
 
     @Override
