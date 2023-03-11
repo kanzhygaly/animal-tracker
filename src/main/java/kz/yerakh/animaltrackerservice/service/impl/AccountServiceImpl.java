@@ -9,11 +9,10 @@ import kz.yerakh.animaltrackerservice.exception.ModifyAccountNotFoundException;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
 import kz.yerakh.animaltrackerservice.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +22,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse addNewAccount(AccountRequest accountRequest) {
-        checkIfEmailExist(accountRequest.email());
-        accountRepository.save(accountRequest);
+        try {
+            accountRepository.save(accountRequest);
+        } catch (DuplicateKeyException ex) {
+            throw new AccountAlreadyExistException();
+        }
         return accountRepository.findByEmail(accountRequest.email())
                 .map(value -> AccountResponse.builder(value).build())
                 .orElse(null);
@@ -41,16 +43,17 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountResponse> searchAccounts(AccountSearchCriteria accountSearchCriteria) {
         return accountRepository.findByParams(accountSearchCriteria).stream()
                 .map(value -> AccountResponse.builder(value).build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public AccountResponse updateAccount(Integer accountId, AccountRequest accountRequest) {
-        var existing = accountRepository.findById(accountId).orElseThrow(ModifyAccountNotFoundException::new);
-        if (!existing.email().equals(accountRequest.email())) {
-            checkIfEmailExist(accountRequest.email());
+        checkIfAccountExist(accountId);
+        try {
+            accountRepository.update(accountId, accountRequest);
+        } catch (DuplicateKeyException ex) {
+            throw new AccountAlreadyExistException();
         }
-        accountRepository.update(accountId, accountRequest);
         return AccountResponse.internalBuilder()
                 .id(accountId)
                 .firstName(accountRequest.firstName())
@@ -61,16 +64,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(Integer accountId) {
-        try {
-            accountRepository.delete(accountId);
-        } catch (DataAccessException ex) {
-            throw new ModifyAccountNotFoundException();
-        }
+        checkIfAccountExist(accountId);
+        accountRepository.delete(accountId);
     }
 
-    private void checkIfEmailExist(String email) {
-        accountRepository.findByEmail(email).ifPresent(account -> {
-            throw new AccountAlreadyExistException();
-        });
+    private void checkIfAccountExist(Integer accountId) {
+        if (accountRepository.findById(accountId).isEmpty()) {
+            throw new ModifyAccountNotFoundException();
+        }
     }
 }

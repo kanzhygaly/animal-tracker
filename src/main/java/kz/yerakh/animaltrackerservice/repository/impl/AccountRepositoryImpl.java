@@ -5,6 +5,7 @@ import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.Account;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -68,12 +69,20 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Optional<Account> findById(Integer accountId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, new Account.AccountRowMapper(), accountId));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, new Account.AccountRowMapper(), accountId));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Account> findByEmail(String email) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_EMAIL, new Account.AccountRowMapper(), email));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_EMAIL, new Account.AccountRowMapper(), email));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override

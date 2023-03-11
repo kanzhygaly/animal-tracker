@@ -13,12 +13,12 @@ public record Account(Integer accountId, String firstName, String lastName, Stri
 
         @Override
         public Account mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Account(
-                    rs.getInt("account_id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
-                    rs.getString("email")
-            );
+            return Account.builder()
+                    .accountId(rs.getInt("account_id"))
+                    .firstName(rs.getString("first_name"))
+                    .lastName(rs.getString("last_name"))
+                    .email(rs.getString("email"))
+                    .build();
         }
     }
 }

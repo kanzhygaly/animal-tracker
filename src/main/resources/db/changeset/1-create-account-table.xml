@@ -6,26 +6,30 @@
     <changeSet id="1-create-account-table" author="Yerlan Akhmetov">
         <preConditions>
             <not>
-                <tableExists tableName="account" />
+                <tableExists tableName="account"/>
             </not>
         </preConditions>
 
         <createTable tableName="account">
-            <column name="account_id" type="bigint">
+            <column name="account_id" type="serial">
                 <constraints primaryKey="true" primaryKeyName="account_id_pk"/>
             </column>
-            <column name="first_name" type="varchar(250)" />
-            <column name="last_name" type="varchar(250)" />
-            <column name="email" type="varchar(250)">
-                <constraints unique="true" uniqueConstraintName="email_unique"/>
+            <column name="first_name" type="varchar(250)">
+                <constraints nullable="false"/>
             </column>
-            <column name="password" type="varchar(250)" />
+            <column name="last_name" type="varchar(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(250)">
+                <constraints unique="true" uniqueConstraintName="email_unique" nullable="false"/>
+            </column>
+            <column name="password" type="varchar(250)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
-        <addAutoIncrement tableName="account" columnName="account_id" columnDataType="bigint" startWith="1" incrementBy="1"/>
-
         <rollback>
-            <dropTable tableName="account" />
+            <dropTable tableName="account"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

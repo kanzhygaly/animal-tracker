@@ -5,12 +5,13 @@ import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-//@Sql(value = "/db/clean_account.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class AccountRepositoryIntegrationTest {
 
     @Autowired
@@ -35,6 +36,20 @@ class AccountRepositoryIntegrationTest {
         account = testObj.findById(accountId);
         assertThat(account).isPresent();
         assertThat(account.get().email()).isEqualTo(newEmail);
+    }
+
+    @Test
+    @Sql(value = "/db/populate_account.sql")
+    void save_violatesUniqueEmail_throwsException() {
+        var item = new AccountRequest("John", "Smith", "john.smith@gmail.com", "DummyPassword");
+        assertThrows(DuplicateKeyException.class, () -> testObj.save(item));
+    }
+
+    @Test
+    @Sql(value = "/db/populate_account.sql")
+    void update_violatesUniqueEmail_throwsException() {
+        var item = new AccountRequest("John", "Smith", "john.smith@gmail.com", "DummyPassword");
+        assertThrows(DuplicateKeyException.class, () -> testObj.update(2, item));
     }
 
     @Test
@@ -90,5 +105,15 @@ class AccountRepositoryIntegrationTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).accountId()).isEqualTo(1);
         assertThat(result.get(1).accountId()).isEqualTo(2);
+    }
+
+    @Test
+    @Sql(value = "/db/clean_account.sql")
+    void findByParams_noResults_success() {
+        var searchCriteria = AccountSearchCriteria.builder()
+                .from(0).size(2).build();
+
+        var result = testObj.findByParams(searchCriteria);
+        assertThat(result).isEmpty();
     }
 }
