@@ -6,7 +6,10 @@ import kz.yerakh.animaltrackerservice.model.Location;
 public interface LocationService {
 
     Location getLocation(Long locationId);
+
     Location addLocation(LocationRequest locationRequest);
+
     Location updateLocation(Long locationId, LocationRequest locationRequest);
+
     void deleteLocation(Long locationId);
 }

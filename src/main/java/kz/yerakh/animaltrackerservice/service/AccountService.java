@@ -1,8 +1,8 @@
 package kz.yerakh.animaltrackerservice.service;
 
+import kz.yerakh.animaltrackerservice.dto.AccountRequest;
 import kz.yerakh.animaltrackerservice.dto.AccountResponse;
 import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
-import kz.yerakh.animaltrackerservice.dto.AccountRequest;
 
 import java.util.List;
 

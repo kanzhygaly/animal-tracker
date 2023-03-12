@@ -3,8 +3,8 @@ package kz.yerakh.animaltrackerservice.service.impl;
 import kz.yerakh.animaltrackerservice.dto.AccountRequest;
 import kz.yerakh.animaltrackerservice.dto.AccountResponse;
 import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
-import kz.yerakh.animaltrackerservice.exception.AccountAlreadyExistException;
-import kz.yerakh.animaltrackerservice.exception.AccountNotFoundException;
+import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
+import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.ModifyAccountNotFoundException;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
 import kz.yerakh.animaltrackerservice.service.AccountService;
@@ -25,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             accountRepository.save(accountRequest);
         } catch (DuplicateKeyException ex) {
-            throw new AccountAlreadyExistException();
+            throw new EntryAlreadyExistException();
         }
         return accountRepository.findByEmail(accountRequest.email())
                 .map(value -> AccountResponse.builder(value).build())
@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse getAccount(Integer accountId) {
         return accountRepository.findById(accountId)
                 .map(value -> AccountResponse.builder(value).build())
-                .orElseThrow(AccountNotFoundException::new);
+                .orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             accountRepository.update(accountId, accountRequest);
         } catch (DuplicateKeyException ex) {
-            throw new AccountAlreadyExistException();
+            throw new EntryAlreadyExistException();
         }
         return AccountResponse.internalBuilder()
                 .id(accountId)

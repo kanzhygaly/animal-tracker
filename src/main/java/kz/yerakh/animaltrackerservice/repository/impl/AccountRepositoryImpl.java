@@ -17,8 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccountRepositoryImpl implements AccountRepository {
 
-    private static final String GET_ACCOUNT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
-    private static final String GET_ACCOUNT_BY_EMAIL = "SELECT account_id, first_name, last_name, email FROM account WHERE email = ?";
+    private static final String SELECT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
+    private static final String SELECT_BY_EMAIL = "SELECT account_id, first_name, last_name, email FROM account WHERE email = ?";
     private static final String SELECT = "SELECT account_id, first_name, last_name, email FROM account";
     private static final String WHERE = " WHERE";
     private static final String AND = " AND";
@@ -70,7 +70,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public Optional<Account> findById(Integer accountId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, new Account.AccountRowMapper(), accountId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new Account.AccountRowMapper(), accountId));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -79,7 +79,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public Optional<Account> findByEmail(String email) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_EMAIL, new Account.AccountRowMapper(), email));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_EMAIL, new Account.AccountRowMapper(), email));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }

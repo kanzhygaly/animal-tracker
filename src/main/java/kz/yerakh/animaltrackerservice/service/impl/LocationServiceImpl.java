@@ -1,8 +1,8 @@
 package kz.yerakh.animaltrackerservice.service.impl;
 
 import kz.yerakh.animaltrackerservice.dto.LocationRequest;
-import kz.yerakh.animaltrackerservice.exception.LocationAlreadyExistException;
-import kz.yerakh.animaltrackerservice.exception.LocationNotFoundException;
+import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
+import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.model.Location;
 import kz.yerakh.animaltrackerservice.repository.LocationRepository;
 import kz.yerakh.animaltrackerservice.service.LocationService;
@@ -18,7 +18,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Location getLocation(Long locationId) {
-        return locationRepository.findById(locationId).orElseThrow(LocationNotFoundException::new);
+        return locationRepository.findById(locationId).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
@@ -26,9 +26,9 @@ public class LocationServiceImpl implements LocationService {
         try {
             locationRepository.save(locationRequest);
         } catch (DuplicateKeyException ex) {
-            throw new LocationAlreadyExistException();
+            throw new EntryAlreadyExistException();
         }
-        return locationRepository.findByLatAndLong(locationRequest).orElseThrow(LocationNotFoundException::new);
+        return locationRepository.findByLatAndLong(locationRequest).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class LocationServiceImpl implements LocationService {
         try {
             locationRepository.update(locationId, locationRequest);
         } catch (DuplicateKeyException ex) {
-            throw new LocationAlreadyExistException();
+            throw new EntryAlreadyExistException();
         }
         return Location.builder()
                 .id(locationId)
@@ -54,7 +54,7 @@ public class LocationServiceImpl implements LocationService {
 
     private void checkIfLocationExist(Long locationId) {
         if (locationRepository.findById(locationId).isEmpty()) {
-            throw new LocationNotFoundException();
+            throw new EntryNotFoundException();
         }
     }
 }

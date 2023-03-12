@@ -14,8 +14,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LocationRepositoryImpl implements LocationRepository {
 
-    private static final String GET_ACCOUNT_BY_ID = "SELECT * FROM location WHERE location_id = ?";
-    private static final String GET_ACCOUNT_BY = "SELECT * FROM location WHERE latitude = ? AND longitude = ?";
+    private static final String SELECT_BY_ID = "SELECT * FROM location WHERE location_id = ?";
+    private static final String SELECT_BY = "SELECT * FROM location WHERE latitude = ? AND longitude = ?";
     private static final String INSERT = "INSERT INTO location(latitude, longitude) VALUES(?, ?)";
     private static final String UPDATE = "UPDATE location SET latitude = ?, longitude = ? WHERE location_id = ?";
     private static final String DELETE = "DELETE FROM location WHERE location_id = ?";
@@ -25,7 +25,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Override
     public Optional<Location> findById(Long locationId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY_ID, new Location.LocationRowMapper(), locationId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new Location.LocationRowMapper(), locationId));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -34,7 +34,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Override
     public Optional<Location> findByLatAndLong(LocationRequest locationRequest) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_ACCOUNT_BY, new Location.LocationRowMapper(),
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY, new Location.LocationRowMapper(),
                     locationRequest.latitude(), locationRequest.longitude()));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
