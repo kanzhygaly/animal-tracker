@@ -55,5 +55,6 @@ class LocationRepositoryIntegrationTest {
         long locationId = 1;
         assertThat(testObj.delete(locationId)).isEqualTo(1);
         assertThat(testObj.findById(locationId)).isEmpty();
+        assertThat(testObj.findByLatAndLong(new LocationRequest(1.23, 2.23))).isEmpty();
     }
 }

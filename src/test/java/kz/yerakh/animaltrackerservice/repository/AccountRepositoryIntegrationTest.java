@@ -109,11 +109,12 @@ class AccountRepositoryIntegrationTest {
 
     @Test
     @Sql(value = "/db/clean_account.sql")
-    void findByParams_noResults_success() {
+    void findBy_noResults_success() {
         var searchCriteria = AccountSearchCriteria.builder()
                 .from(0).size(2).build();
+        assertThat(testObj.findByParams(searchCriteria)).isEmpty();
 
-        var result = testObj.findByParams(searchCriteria);
-        assertThat(result).isEmpty();
+        assertThat(testObj.findById(1)).isEmpty();
+        assertThat(testObj.findByEmail("fakeEmail")).isEmpty();
     }
 }
