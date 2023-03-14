@@ -34,8 +34,8 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public AnimalResponse addAnimal(AnimalRequest animalRequest) {
-        if (accountRepository.findById(animalRequest.chipperId()).isEmpty()
-                || locationRepository.findById(animalRequest.chippingLocationId()).isEmpty()) {
+        if (accountRepository.find(animalRequest.chipperId()).isEmpty()
+                || locationRepository.find(animalRequest.chippingLocationId()).isEmpty()) {
             throw new EntryNotFoundException();
         }
 

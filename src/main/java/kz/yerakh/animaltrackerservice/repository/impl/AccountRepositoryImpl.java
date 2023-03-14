@@ -7,6 +7,7 @@ import kz.yerakh.animaltrackerservice.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.Optional;
 public class AccountRepositoryImpl implements AccountRepository {
 
     private static final String SELECT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
-    private static final String SELECT_BY_EMAIL = "SELECT account_id, first_name, last_name, email FROM account WHERE email = ?";
     private static final String SELECT = "SELECT account_id, first_name, last_name, email FROM account";
     private static final String WHERE = " WHERE";
     private static final String AND = " AND";
@@ -68,7 +68,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> findById(Integer accountId) {
+    public Optional<Account> find(Integer accountId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new Account.AccountRowMapper(), accountId));
         } catch (EmptyResultDataAccessException ex) {
@@ -77,18 +77,19 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> findByEmail(String email) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_EMAIL, new Account.AccountRowMapper(), email));
-        } catch (EmptyResultDataAccessException ex) {
-            return Optional.empty();
-        }
-    }
+    public Integer save(AccountRequest payload) {
+        var keyHolder = new GeneratedKeyHolder();
 
-    @Override
-    public int save(AccountRequest payload) {
-        return jdbcTemplate.update(INSERT, payload.firstName(), payload.lastName(),
-                payload.email(), payload.password());
+        jdbcTemplate.update(connection -> {
+            var ps = connection.prepareStatement(INSERT);
+            ps.setString(1, payload.firstName());
+            ps.setString(2, payload.lastName());
+            ps.setString(3, payload.email());
+            ps.setString(4, payload.password());
+            return ps;
+        }, keyHolder);
+
+        return (Integer) keyHolder.getKey();
     }
 
     @Override

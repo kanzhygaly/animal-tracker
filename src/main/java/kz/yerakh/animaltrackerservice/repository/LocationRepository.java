@@ -7,11 +7,9 @@ import java.util.Optional;
 
 public interface LocationRepository {
 
-    Optional<Location> findById(Long locationId);
+    Optional<Location> find(Long locationId);
 
-    Optional<Location> findByLatAndLong(LocationRequest payload);
-
-    int save(LocationRequest payload);
+    Long save(LocationRequest payload);
 
     int update(Long locationId, LocationRequest payload);
 

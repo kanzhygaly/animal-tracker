@@ -11,11 +11,9 @@ public interface AccountRepository {
 
     List<Account> findByParams(AccountSearchCriteria accountSearchCriteria);
 
-    Optional<Account> findById(Integer accountId);
+    Optional<Account> find(Integer accountId);
 
-    Optional<Account> findByEmail(String email);
-
-    int save(AccountRequest payload);
+    Integer save(AccountRequest payload);
 
     int update(Integer accountId, AccountRequest payload);
 

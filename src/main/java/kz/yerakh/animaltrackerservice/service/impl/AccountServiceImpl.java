@@ -23,18 +23,18 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponse addNewAccount(AccountRequest accountRequest) {
         try {
-            accountRepository.save(accountRequest);
+            Integer id = accountRepository.save(accountRequest);
+            return accountRepository.find(id)
+                    .map(value -> AccountResponse.builder(value).build())
+                    .orElse(null);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
-        return accountRepository.findByEmail(accountRequest.email())
-                .map(value -> AccountResponse.builder(value).build())
-                .orElse(null);
     }
 
     @Override
     public AccountResponse getAccount(Integer accountId) {
-        return accountRepository.findById(accountId)
+        return accountRepository.find(accountId)
                 .map(value -> AccountResponse.builder(value).build())
                 .orElseThrow(EntryNotFoundException::new);
     }
@@ -69,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void checkIfAccountExist(Integer accountId) {
-        if (accountRepository.findById(accountId).isEmpty()) {
+        if (accountRepository.find(accountId).isEmpty()) {
             throw new ModifyAccountNotFoundException();
         }
     }

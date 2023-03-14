@@ -18,10 +18,9 @@ class LocationRepositoryIntegrationTest {
 
     @Test
     void save_find_and_update_success() {
-        var locationRequest = new LocationRequest(1.0, 1.0);
-        assertThat(testObj.save(locationRequest)).isEqualTo(1);
+        Long id = testObj.save(new LocationRequest(1.0, 1.0));
 
-        var location = testObj.findByLatAndLong(locationRequest);
+        var location = testObj.find(id);
         assertThat(location).isPresent();
         var locationId = location.get().id();
 
@@ -29,7 +28,7 @@ class LocationRepositoryIntegrationTest {
 
         assertThat(testObj.update(locationId, updated)).isEqualTo(1);
 
-        location = testObj.findById(locationId);
+        location = testObj.find(locationId);
         assertThat(location).isPresent();
         assertThat(location.get().latitude()).isEqualTo(updated.latitude());
         assertThat(location.get().longitude()).isEqualTo(updated.longitude());
@@ -54,7 +53,6 @@ class LocationRepositoryIntegrationTest {
     void delete_success() {
         long locationId = 1;
         assertThat(testObj.delete(locationId)).isEqualTo(1);
-        assertThat(testObj.findById(locationId)).isEmpty();
-        assertThat(testObj.findByLatAndLong(new LocationRequest(1.23, 2.23))).isEmpty();
+        assertThat(testObj.find(locationId)).isEmpty();
     }
 }

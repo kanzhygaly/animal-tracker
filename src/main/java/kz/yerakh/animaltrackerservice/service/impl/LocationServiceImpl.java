@@ -1,8 +1,8 @@
 package kz.yerakh.animaltrackerservice.service.impl;
 
 import kz.yerakh.animaltrackerservice.dto.LocationRequest;
-import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
+import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.model.Location;
 import kz.yerakh.animaltrackerservice.repository.LocationRepository;
 import kz.yerakh.animaltrackerservice.service.LocationService;
@@ -18,17 +18,17 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Location getLocation(Long locationId) {
-        return locationRepository.findById(locationId).orElseThrow(EntryNotFoundException::new);
+        return locationRepository.find(locationId).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
     public Location addLocation(LocationRequest locationRequest) {
         try {
-            locationRepository.save(locationRequest);
+            Long id = locationRepository.save(locationRequest);
+            return locationRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
-        return locationRepository.findByLatAndLong(locationRequest).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     private void checkIfLocationExist(Long locationId) {
-        if (locationRepository.findById(locationId).isEmpty()) {
+        if (locationRepository.find(locationId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }

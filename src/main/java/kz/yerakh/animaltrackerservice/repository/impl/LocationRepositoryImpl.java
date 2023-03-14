@@ -6,6 +6,7 @@ import kz.yerakh.animaltrackerservice.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,8 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LocationRepositoryImpl implements LocationRepository {
 
-    private static final String SELECT_BY_ID = "SELECT * FROM location WHERE location_id = ?";
-    private static final String SELECT_BY = "SELECT * FROM location WHERE latitude = ? AND longitude = ?";
+    private static final String SELECT = "SELECT * FROM location WHERE location_id = ?";
     private static final String INSERT = "INSERT INTO location(latitude, longitude) VALUES(?, ?)";
     private static final String UPDATE = "UPDATE location SET latitude = ?, longitude = ? WHERE location_id = ?";
     private static final String DELETE = "DELETE FROM location WHERE location_id = ?";
@@ -23,27 +23,26 @@ public class LocationRepositoryImpl implements LocationRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<Location> findById(Long locationId) {
+    public Optional<Location> find(Long locationId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new Location.LocationRowMapper(), locationId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT, new Location.LocationRowMapper(), locationId));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<Location> findByLatAndLong(LocationRequest payload) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY, new Location.LocationRowMapper(),
-                    payload.latitude(), payload.longitude()));
-        } catch (EmptyResultDataAccessException ex) {
-            return Optional.empty();
-        }
-    }
+    public Long save(LocationRequest payload) {
+        var keyHolder = new GeneratedKeyHolder();
 
-    @Override
-    public int save(LocationRequest payload) {
-        return jdbcTemplate.update(INSERT, payload.latitude(), payload.longitude());
+        jdbcTemplate.update(connection -> {
+            var ps = connection.prepareStatement(INSERT);
+            ps.setDouble(1, payload.latitude());
+            ps.setDouble(2, payload.longitude());
+            return ps;
+        }, keyHolder);
+
+        return (Long) keyHolder.getKey();
     }
 
     @Override
