@@ -6,5 +6,8 @@
     <include file="changeset/1-create-account-table.xml" relativeToChangelogFile="true"/>
     <include file="changeset/2-create-location-table.xml" relativeToChangelogFile="true"/>
     <include file="changeset/3-create-animal-type-table.xml" relativeToChangelogFile="true"/>
+    <include file="changeset/4-create-animal-table.xml" relativeToChangelogFile="true"/>
+    <include file="changeset/5-create-animal-animal-type-table.xml" relativeToChangelogFile="true"/>
+    <include file="changeset/6-create-animal-location-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="5-create-animal-animal-type-table" author="Yerlan Akhmetov">
+        <preConditions>
+            <not>
+                <tableExists tableName="animal_animal_type"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="animal_animal_type">
+            <column name="animal_id" type="bigserial"/>
+            <column name="type_id" type="bigserial"/>
+        </createTable>
+
+        <addPrimaryKey tableName="animal_animal_type" columnNames="animal_id, type_id"
+                       constraintName="animal_animal_type_pk"/>
+
+        <rollback>
+            <dropTable tableName="animal_animal_type"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

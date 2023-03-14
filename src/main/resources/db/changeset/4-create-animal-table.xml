@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="4-create-animal-table" author="Yerlan Akhmetov">
+        <preConditions>
+            <not>
+                <tableExists tableName="animal"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="animal">
+            <column name="animal_id" type="bigserial">
+                <constraints primaryKey="true" primaryKeyName="animal_id_pk"/>
+            </column>
+            <column name="weight" type="float4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="length" type="float4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="height" type="float4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gender" type="varchar(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="life_status" type="varchar(5)" defaultValue="ALIVE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chipping_date_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chipper_id" type="serial">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chipping_location_id" type="bigserial">
+                <constraints nullable="false"/>
+            </column>
+            <column name="death_date_time" type="timestamp"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="animal"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

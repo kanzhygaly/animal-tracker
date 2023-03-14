@@ -18,9 +18,9 @@ class AnimalTypeRepositoryIntegrationTest {
     @Test
     void save_find_and_update_success() {
         String typeName = "lion";
-        assertThat(testObj.save(typeName)).isEqualTo(1);
+        Long id = testObj.save(typeName);
 
-        var animalType = testObj.findByName(typeName);
+        var animalType = testObj.find(id);
         assertThat(animalType).isPresent();
         var animalTypeId = animalType.get().id();
 
@@ -28,7 +28,7 @@ class AnimalTypeRepositoryIntegrationTest {
 
         assertThat(testObj.update(animalTypeId, updated)).isEqualTo(1);
 
-        animalType = testObj.findById(animalTypeId);
+        animalType = testObj.find(animalTypeId);
         assertThat(animalType).isPresent();
         assertThat(animalType.get().type()).isEqualTo(updated);
     }
@@ -50,7 +50,6 @@ class AnimalTypeRepositoryIntegrationTest {
     void delete_success() {
         long typeId = 1;
         assertThat(testObj.delete(typeId)).isEqualTo(1);
-        assertThat(testObj.findById(typeId)).isEmpty();
-        assertThat(testObj.findByName("cattle")).isEmpty();
+        assertThat(testObj.find(typeId)).isEmpty();
     }
 }

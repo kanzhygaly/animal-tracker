@@ -15,9 +15,9 @@ public interface AccountRepository {
 
     Optional<Account> findByEmail(String email);
 
-    int save(AccountRequest accountRequest);
+    int save(AccountRequest payload);
 
-    int update(Integer accountId, AccountRequest accountRequest);
+    int update(Integer accountId, AccountRequest payload);
 
     int delete(Integer accountId);
 }

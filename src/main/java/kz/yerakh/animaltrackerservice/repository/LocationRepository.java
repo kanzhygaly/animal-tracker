@@ -9,11 +9,11 @@ public interface LocationRepository {
 
     Optional<Location> findById(Long locationId);
 
-    Optional<Location> findByLatAndLong(LocationRequest locationRequest);
+    Optional<Location> findByLatAndLong(LocationRequest payload);
 
-    int save(LocationRequest locationRequest);
+    int save(LocationRequest payload);
 
-    int update(Long locationId, LocationRequest locationRequest);
+    int update(Long locationId, LocationRequest payload);
 
     int delete(Long locationId);
 }

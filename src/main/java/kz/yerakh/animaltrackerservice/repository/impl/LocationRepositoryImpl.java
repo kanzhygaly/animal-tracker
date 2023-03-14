@@ -32,23 +32,23 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public Optional<Location> findByLatAndLong(LocationRequest locationRequest) {
+    public Optional<Location> findByLatAndLong(LocationRequest payload) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY, new Location.LocationRowMapper(),
-                    locationRequest.latitude(), locationRequest.longitude()));
+                    payload.latitude(), payload.longitude()));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
     }
 
     @Override
-    public int save(LocationRequest locationRequest) {
-        return jdbcTemplate.update(INSERT, locationRequest.latitude(), locationRequest.longitude());
+    public int save(LocationRequest payload) {
+        return jdbcTemplate.update(INSERT, payload.latitude(), payload.longitude());
     }
 
     @Override
-    public int update(Long locationId, LocationRequest locationRequest) {
-        return jdbcTemplate.update(UPDATE, locationRequest.latitude(), locationRequest.longitude(), locationId);
+    public int update(Long locationId, LocationRequest payload) {
+        return jdbcTemplate.update(UPDATE, payload.latitude(), payload.longitude(), locationId);
     }
 
     @Override

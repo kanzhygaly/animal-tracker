@@ -86,15 +86,15 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public int save(AccountRequest accountRequest) {
-        return jdbcTemplate.update(INSERT, accountRequest.firstName(), accountRequest.lastName(),
-                accountRequest.email(), accountRequest.password());
+    public int save(AccountRequest payload) {
+        return jdbcTemplate.update(INSERT, payload.firstName(), payload.lastName(),
+                payload.email(), payload.password());
     }
 
     @Override
-    public int update(Integer accountId, AccountRequest accountRequest) {
-        return jdbcTemplate.update(UPDATE, accountRequest.firstName(), accountRequest.lastName(),
-                accountRequest.email(), accountRequest.password(), accountId);
+    public int update(Integer accountId, AccountRequest payload) {
+        return jdbcTemplate.update(UPDATE, payload.firstName(), payload.lastName(),
+                payload.email(), payload.password(), accountId);
     }
 
     @Override

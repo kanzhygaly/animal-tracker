@@ -18,17 +18,17 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
     @Override
     public AnimalType getAnimalType(Long typeId) {
-        return animalTypeRepository.findById(typeId).orElseThrow(EntryNotFoundException::new);
+        return animalTypeRepository.find(typeId).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
     public AnimalType addAnimalType(AnimalTypeRequest animalTypeRequest) {
         try {
-            animalTypeRepository.save(animalTypeRequest.type());
+            Long id = animalTypeRepository.save(animalTypeRequest.type());
+            return animalTypeRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
-        return animalTypeRepository.findByName(animalTypeRequest.type()).orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     private void checkIfAnimalTypeExist(Long typeId) {
-        if (animalTypeRepository.findById(typeId).isEmpty()) {
+        if (animalTypeRepository.find(typeId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }

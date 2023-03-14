@@ -2,9 +2,10 @@ package kz.yerakh.animaltrackerservice.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import kz.yerakh.animaltrackerservice.dto.AnimalTypeRequest;
-import kz.yerakh.animaltrackerservice.model.AnimalType;
-import kz.yerakh.animaltrackerservice.service.AnimalTypeService;
+import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
+import kz.yerakh.animaltrackerservice.dto.AnimalResponse;
+import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
+import kz.yerakh.animaltrackerservice.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,30 +16,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/animals")
 public class AnimalController {
 
-    private final AnimalTypeService animalTypeService;
+    private final AnimalService animalService;
 
-    public static final String PATH_ANIMAL_TYPE = "/types";
-
-    @GetMapping(path = PATH_ANIMAL_TYPE + "/{typeId}")
-    public ResponseEntity<AnimalType> getAnimalType(@PathVariable("typeId") @Min(1) Long typeId) {
-        return ResponseEntity.ok(animalTypeService.getAnimalType(typeId));
+    @GetMapping(path = "/{animalId}")
+    public ResponseEntity<AnimalResponse> getAnimal(@PathVariable("animalId") @Min(1) Long animalId) {
+        return ResponseEntity.ok(animalService.getAnimal(animalId));
     }
 
-    @PostMapping(path = PATH_ANIMAL_TYPE)
-    public ResponseEntity<AnimalType> addAnimalType(@RequestBody @Valid AnimalTypeRequest animalTypeRequest) {
-        return new ResponseEntity<>(animalTypeService.addAnimalType(animalTypeRequest), HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<AnimalResponse> addAnimal(@RequestBody @Valid AnimalRequest animalRequest) {
+        return new ResponseEntity<>(animalService.addAnimal(animalRequest), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = PATH_ANIMAL_TYPE + "/{typeId}")
-    public ResponseEntity<AnimalType> updateAnimalType(@PathVariable("typeId") @Min(1) Long typeId,
-                                                       @RequestBody @Valid AnimalTypeRequest animalTypeRequest) {
-        return ResponseEntity.ok(animalTypeService.updateAnimalType(typeId, animalTypeRequest));
+    @PutMapping(path = "/{animalId}")
+    public ResponseEntity<AnimalResponse> updateAnimal(@PathVariable("animalId") @Min(1) Long animalId,
+                                                       @RequestBody @Valid AnimalUpdateRequest animalUpdateRequest) {
+        return ResponseEntity.ok(animalService.updateAnimal(animalId, animalUpdateRequest));
     }
 
-    @DeleteMapping(path = PATH_ANIMAL_TYPE + "/{typeId}")
-    public ResponseEntity<String> deleteAnimalType(@PathVariable("typeId") @Min(1) Long typeId) {
+    @DeleteMapping(path = "/{animalId}")
+    public ResponseEntity<String> deleteAnimal(@PathVariable("animalId") @Min(1) Long animalId) {
         // TODO: check if Type connected to an Animal. If yes, return 400
-        animalTypeService.deleteAnimalType(typeId);
+        animalService.deleteAnimal(animalId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

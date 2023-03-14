@@ -5,6 +5,7 @@ import kz.yerakh.animaltrackerservice.repository.AnimalTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,8 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AnimalTypeRepositoryImpl implements AnimalTypeRepository {
 
-    private static final String SELECT_BY_ID = "SELECT * FROM animal_type WHERE type_id = ?";
-    private static final String SELECT_BY_NAME = "SELECT * FROM animal_type WHERE type_name = ?";
+    private static final String SELECT = "SELECT * FROM animal_type WHERE type_id = ?";
     private static final String INSERT = "INSERT INTO animal_type(type_name) VALUES(?)";
     private static final String UPDATE = "UPDATE animal_type SET type_name = ? WHERE type_id = ?";
     private static final String DELETE = "DELETE FROM animal_type WHERE type_id = ?";
@@ -22,26 +22,25 @@ public class AnimalTypeRepositoryImpl implements AnimalTypeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<AnimalType> findById(Long typeId) {
+    public Optional<AnimalType> find(Long typeId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new AnimalType.AnimalTypeRowMapper(), typeId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT, new AnimalType.AnimalTypeRowMapper(), typeId));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<AnimalType> findByName(String typeName) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_NAME, new AnimalType.AnimalTypeRowMapper(), typeName));
-        } catch (EmptyResultDataAccessException ex) {
-            return Optional.empty();
-        }
-    }
+    public Long save(String typeName) {
+        var keyHolder = new GeneratedKeyHolder();
 
-    @Override
-    public int save(String typeName) {
-        return jdbcTemplate.update(INSERT, typeName);
+        jdbcTemplate.update(connection -> {
+            var ps = connection.prepareStatement(INSERT);
+            ps.setString(1, typeName);
+            return ps;
+        }, keyHolder);
+
+        return (Long) keyHolder.getKey();
     }
 
     @Override
