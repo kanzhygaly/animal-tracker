@@ -89,6 +89,12 @@ public class AnimalServiceImpl implements AnimalService {
         animalRepository.delete(animalId);
     }
 
+    @Override
+    public AnimalResponse addTypeToAnimal(Long animalId, Long typeId) {
+        // TODO: implement
+        return null;
+    }
+
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
         return AnimalResponse.builder(animal)
                 .animalTypes(animalAnimalTypeRepository.findAnimalTypes(animal.animalId()))

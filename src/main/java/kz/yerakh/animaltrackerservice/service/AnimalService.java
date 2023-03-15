@@ -18,4 +18,6 @@ public interface AnimalService {
     AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest payload);
 
     void deleteAnimal(Long animalId);
+
+    AnimalResponse addTypeToAnimal(Long animalId, Long typeId);
 }
