@@ -7,9 +7,9 @@ public interface AnimalTypeService {
 
     AnimalType getAnimalType(Long typeId);
 
-    AnimalType addAnimalType(AnimalTypeRequest animalTypeRequest);
+    AnimalType addAnimalType(AnimalTypeRequest payload);
 
-    AnimalType updateAnimalType(Long typeId, AnimalTypeRequest animalTypeRequest);
+    AnimalType updateAnimalType(Long typeId, AnimalTypeRequest payload);
 
     void deleteAnimalType(Long typeId);
 }

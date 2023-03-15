@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimalAnimalTypeRepositoryImpl implements AnimalAnimalTypeRepository {
 
-    private static final String SELECT = "SELECT type_id FROM animal_animal_type WHERE animal_id = ?";
+    private static final String SELECT = "SELECT type_id FROM animal_animal_type WHERE animal_id = ? ORDER BY location_id";
     private static final String INSERT = "INSERT INTO animal_animal_type(animal_id, type_id) VALUES(?, ?)";
     private static final String DELETE = "DELETE FROM animal_animal_type WHERE animal_id = ? AND type_id = ?";
 

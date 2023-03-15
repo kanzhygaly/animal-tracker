@@ -21,9 +21,9 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
 
     @Override
-    public AccountResponse addAccount(AccountRequest accountRequest) {
+    public AccountResponse addAccount(AccountRequest payload) {
         try {
-            Integer id = accountRepository.save(accountRequest);
+            Integer id = accountRepository.save(payload);
             return accountRepository.find(id)
                     .map(value -> AccountResponse.builder(value).build())
                     .orElse(null);
@@ -40,25 +40,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponse> search(AccountSearchCriteria accountSearchCriteria) {
-        return accountRepository.findByParams(accountSearchCriteria).stream()
+    public List<AccountResponse> search(AccountSearchCriteria payload) {
+        return accountRepository.findByParams(payload).stream()
                 .map(value -> AccountResponse.builder(value).build())
                 .toList();
     }
 
     @Override
-    public AccountResponse updateAccount(Integer accountId, AccountRequest accountRequest) {
+    public AccountResponse updateAccount(Integer accountId, AccountRequest payload) {
         checkIfAccountExist(accountId);
         try {
-            accountRepository.update(accountId, accountRequest);
+            accountRepository.update(accountId, payload);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
         return AccountResponse.internalBuilder()
                 .id(accountId)
-                .firstName(accountRequest.firstName())
-                .lastName(accountRequest.lastName())
-                .email(accountRequest.email())
+                .firstName(payload.firstName())
+                .lastName(payload.lastName())
+                .email(payload.email())
                 .build();
     }
 

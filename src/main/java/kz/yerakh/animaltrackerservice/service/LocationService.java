@@ -7,9 +7,9 @@ public interface LocationService {
 
     Location getLocation(Long locationId);
 
-    Location addLocation(LocationRequest locationRequest);
+    Location addLocation(LocationRequest payload);
 
-    Location updateLocation(Long locationId, LocationRequest locationRequest);
+    Location updateLocation(Long locationId, LocationRequest payload);
 
     void deleteLocation(Long locationId);
 }

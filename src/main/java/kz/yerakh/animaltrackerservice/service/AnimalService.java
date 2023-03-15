@@ -11,11 +11,11 @@ public interface AnimalService {
 
     AnimalResponse getAnimal(Long animalId);
 
-    List<AnimalResponse> search(AnimalSearchCriteria animalSearchCriteria);
+    List<AnimalResponse> search(AnimalSearchCriteria payload);
 
-    AnimalResponse addAnimal(AnimalRequest animalTypeRequest);
+    AnimalResponse addAnimal(AnimalRequest payload);
 
-    AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest animalUpdateRequest);
+    AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest payload);
 
     void deleteAnimal(Long animalId);
 }

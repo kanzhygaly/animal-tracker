@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountResponse addAccount(AccountRequest accountRequest);
+    AccountResponse addAccount(AccountRequest payload);
 
     AccountResponse getAccount(Integer accountId);
 
-    List<AccountResponse> search(AccountSearchCriteria accountSearchCriteria);
+    List<AccountResponse> search(AccountSearchCriteria payload);
 
-    AccountResponse updateAccount(Integer accountId, AccountRequest accountRequest);
+    AccountResponse updateAccount(Integer accountId, AccountRequest payload);
 
     void deleteAccount(Integer accountId);
 }

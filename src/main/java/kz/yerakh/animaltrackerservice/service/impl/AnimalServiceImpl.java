@@ -1,11 +1,9 @@
 package kz.yerakh.animaltrackerservice.service.impl;
 
-import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
-import kz.yerakh.animaltrackerservice.dto.AnimalResponse;
-import kz.yerakh.animaltrackerservice.dto.AnimalSearchCriteria;
-import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
+import kz.yerakh.animaltrackerservice.dto.*;
 import kz.yerakh.animaltrackerservice.exception.DuplicateItemException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
+import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.model.Animal;
 import kz.yerakh.animaltrackerservice.repository.*;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
@@ -35,27 +33,24 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public List<AnimalResponse> search(AnimalSearchCriteria animalSearchCriteria) {
+    public List<AnimalResponse> search(AnimalSearchCriteria payload) {
         // TODO: implement
         return Collections.emptyList();
     }
 
     @Override
-    public AnimalResponse addAnimal(AnimalRequest animalRequest) {
-        if (accountRepository.find(animalRequest.chipperId()).isEmpty()
-                || locationRepository.find(animalRequest.chippingLocationId()).isEmpty()) {
-            throw new EntryNotFoundException();
-        }
+    public AnimalResponse addAnimal(AnimalRequest payload) {
+        checkIfEntriesExist(payload.chipperId(), payload.chippingLocationId());
 
-        if (Utils.isDuplicate(animalRequest.animalTypes())) {
+        if (Utils.isDuplicate(payload.animalTypes())) {
             throw new DuplicateItemException();
         }
 
-        validateAnimalTypes(animalRequest.animalTypes());
+        validateAnimalTypes(payload.animalTypes());
 
-        Long animalId = animalRepository.save(animalRequest);
+        Long animalId = animalRepository.save(payload);
 
-        for (Long typeId : animalRequest.animalTypes()) {
+        for (Long typeId : payload.animalTypes()) {
             animalAnimalTypeRepository.save(animalId, typeId);
         }
 
@@ -65,20 +60,40 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest animalUpdateRequest) {
-        checkIfAnimalExist(animalId);
+    public AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest payload) {
+        checkIfEntriesExist(payload.chipperId(), payload.chippingLocationId());
+        var animal = animalRepository.find(animalId).orElseThrow(EntryNotFoundException::new);
 
-        animalRepository.update(animalId, animalUpdateRequest);
+        if (payload.lifeStatus().equals(LifeStatus.ALIVE)
+                && LifeStatus.DEAD.equals(animal.lifeStatus())) {
+            throw new InvalidValueException();
+        }
+
+        var visitedLocations = animalLocationRepository.findLocations(animalId);
+        if (payload.chippingLocationId().equals(visitedLocations.get(0))) {
+            throw new InvalidValueException();
+        }
+
+        animalRepository.update(animalId, payload);
 
         return animalRepository.find(animalId)
-                .map(this::mapAnimal)
+                .map(value -> mapAnimal(value, visitedLocations))
                 .orElseThrow(EntryNotFoundException::new);
     }
 
     @Override
     public void deleteAnimal(Long animalId) {
-        checkIfAnimalExist(animalId);
+        if (animalRepository.find(animalId).isEmpty()) {
+            throw new EntryNotFoundException();
+        }
         animalRepository.delete(animalId);
+    }
+
+    private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
+        return AnimalResponse.builder(animal)
+                .animalTypes(animalAnimalTypeRepository.findAnimalTypes(animal.animalId()))
+                .visitedLocations(visitedLocations)
+                .build();
     }
 
     private AnimalResponse mapAnimal(Animal animal) {
@@ -95,8 +110,8 @@ public class AnimalServiceImpl implements AnimalService {
         }
     }
 
-    private void checkIfAnimalExist(Long animalId) {
-        if (animalRepository.find(animalId).isEmpty()) {
+    private void checkIfEntriesExist(Integer chipperId, Long chippingLocationId) {
+        if (accountRepository.find(chipperId).isEmpty() || locationRepository.find(chippingLocationId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }

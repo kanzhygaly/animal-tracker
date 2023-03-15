@@ -22,9 +22,9 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     @Override
-    public AnimalType addAnimalType(AnimalTypeRequest animalTypeRequest) {
+    public AnimalType addAnimalType(AnimalTypeRequest payload) {
         try {
-            Long id = animalTypeRepository.save(animalTypeRequest.type());
+            Long id = animalTypeRepository.save(payload.type());
             return animalTypeRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
@@ -32,14 +32,14 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     @Override
-    public AnimalType updateAnimalType(Long typeId, AnimalTypeRequest animalTypeRequest) {
+    public AnimalType updateAnimalType(Long typeId, AnimalTypeRequest payload) {
         checkIfAnimalTypeExist(typeId);
         try {
-            animalTypeRepository.update(typeId, animalTypeRequest.type());
+            animalTypeRepository.update(typeId, payload.type());
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
-        return new AnimalType(typeId, animalTypeRequest.type());
+        return new AnimalType(typeId, payload.type());
     }
 
     @Override

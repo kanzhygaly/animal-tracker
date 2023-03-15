@@ -22,9 +22,9 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Location addLocation(LocationRequest locationRequest) {
+    public Location addLocation(LocationRequest payload) {
         try {
-            Long id = locationRepository.save(locationRequest);
+            Long id = locationRepository.save(payload);
             return locationRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
@@ -32,17 +32,17 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Location updateLocation(Long locationId, LocationRequest locationRequest) {
+    public Location updateLocation(Long locationId, LocationRequest payload) {
         checkIfLocationExist(locationId);
         try {
-            locationRepository.update(locationId, locationRequest);
+            locationRepository.update(locationId, payload);
         } catch (DuplicateKeyException ex) {
             throw new EntryAlreadyExistException();
         }
         return Location.builder()
                 .id(locationId)
-                .latitude(locationRequest.latitude())
-                .longitude(locationRequest.longitude())
+                .latitude(payload.latitude())
+                .longitude(payload.longitude())
                 .build();
     }
 
