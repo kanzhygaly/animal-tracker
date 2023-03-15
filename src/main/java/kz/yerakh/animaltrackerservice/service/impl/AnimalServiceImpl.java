@@ -83,14 +83,16 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public void deleteAnimal(Long animalId) {
-        if (animalRepository.find(animalId).isEmpty()) {
-            throw new EntryNotFoundException();
-        }
+        checkIfAnimalExist(animalId);
         animalRepository.delete(animalId);
     }
 
     @Override
     public AnimalResponse addTypeToAnimal(Long animalId, Long typeId) {
+        checkIfAnimalExist(animalId);
+        if (animalTypeRepository.find(typeId).isEmpty()) {
+            throw new EntryNotFoundException();
+        }
         // TODO: implement
         return null;
     }
@@ -112,6 +114,12 @@ public class AnimalServiceImpl implements AnimalService {
     private void validateAnimalTypes(List<Long> animalTypes) {
         boolean found = animalTypes.stream().anyMatch(a -> animalTypeRepository.find(a).isEmpty());
         if (found) {
+            throw new EntryNotFoundException();
+        }
+    }
+
+    private void checkIfAnimalExist(Long animalId) {
+        if (animalRepository.find(animalId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }
