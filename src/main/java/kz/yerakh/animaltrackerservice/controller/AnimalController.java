@@ -2,14 +2,16 @@ package kz.yerakh.animaltrackerservice.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
-import kz.yerakh.animaltrackerservice.dto.AnimalResponse;
-import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
+import kz.yerakh.animaltrackerservice.dto.*;
+import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +23,31 @@ public class AnimalController {
     @GetMapping(path = "/{animalId}")
     public ResponseEntity<AnimalResponse> getAnimal(@PathVariable("animalId") @Min(1) Long animalId) {
         return ResponseEntity.ok(animalService.getAnimal(animalId));
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<AnimalResponse>> getAnimals(@RequestParam(required = false) LocalDateTime startDateTime,
+                                                             @RequestParam(required = false) LocalDateTime endDateTime,
+                                                             @RequestParam(required = false) Integer chipperId,
+                                                             @RequestParam(required = false) Long chippingLocationId,
+                                                             @RequestParam(required = false) LifeStatus lifeStatus,
+                                                             @RequestParam(required = false) Gender gender,
+                                                             @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        if (chipperId < 1 || chippingLocationId < 1) {
+            throw new InvalidValueException();
+        }
+        var criteria = AnimalSearchCriteria.builder()
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
+                .chipperId(chipperId)
+                .chippingLocationId(chippingLocationId)
+                .lifeStatus(lifeStatus)
+                .gender(gender)
+                .from(from)
+                .size(size)
+                .build();
+        return ResponseEntity.ok(animalService.search(criteria));
     }
 
     @PostMapping

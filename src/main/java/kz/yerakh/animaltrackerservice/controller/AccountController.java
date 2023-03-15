@@ -38,7 +38,7 @@ public class AccountController {
                 .from(from)
                 .size(size)
                 .build();
-        return ResponseEntity.ok(accountService.searchAccounts(criteria));
+        return ResponseEntity.ok(accountService.search(criteria));
     }
 
     @PutMapping(path = "/{accountId}")

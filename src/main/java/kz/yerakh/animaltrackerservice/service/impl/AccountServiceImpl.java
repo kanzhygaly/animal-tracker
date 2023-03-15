@@ -21,7 +21,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
 
     @Override
-    public AccountResponse addNewAccount(AccountRequest accountRequest) {
+    public AccountResponse addAccount(AccountRequest accountRequest) {
         try {
             Integer id = accountRepository.save(accountRequest);
             return accountRepository.find(id)
@@ -40,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponse> searchAccounts(AccountSearchCriteria accountSearchCriteria) {
+    public List<AccountResponse> search(AccountSearchCriteria accountSearchCriteria) {
         return accountRepository.findByParams(accountSearchCriteria).stream()
                 .map(value -> AccountResponse.builder(value).build())
                 .toList();

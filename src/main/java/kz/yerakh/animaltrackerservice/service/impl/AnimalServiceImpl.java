@@ -2,6 +2,7 @@ package kz.yerakh.animaltrackerservice.service.impl;
 
 import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
 import kz.yerakh.animaltrackerservice.dto.AnimalResponse;
+import kz.yerakh.animaltrackerservice.dto.AnimalSearchCriteria;
 import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
 import kz.yerakh.animaltrackerservice.exception.DuplicateItemException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
@@ -12,6 +13,7 @@ import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,6 +32,12 @@ public class AnimalServiceImpl implements AnimalService {
         return animalRepository.find(animalId)
                 .map(this::mapAnimal)
                 .orElseThrow(EntryNotFoundException::new);
+    }
+
+    @Override
+    public List<AnimalResponse> search(AnimalSearchCriteria animalSearchCriteria) {
+        // TODO: implement
+        return Collections.emptyList();
     }
 
     @Override

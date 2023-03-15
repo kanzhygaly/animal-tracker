@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountResponse addNewAccount(AccountRequest accountRequest);
+    AccountResponse addAccount(AccountRequest accountRequest);
 
     AccountResponse getAccount(Integer accountId);
 
-    List<AccountResponse> searchAccounts(AccountSearchCriteria accountSearchCriteria);
+    List<AccountResponse> search(AccountSearchCriteria accountSearchCriteria);
 
     AccountResponse updateAccount(Integer accountId, AccountRequest accountRequest);
 

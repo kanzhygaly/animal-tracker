@@ -9,6 +9,9 @@ public enum LifeStatus {
 
     @JsonCreator
     public static LifeStatus from(String value) {
+        if (value == null) {
+            return null;
+        }
         try {
             return LifeStatus.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException ex) {
