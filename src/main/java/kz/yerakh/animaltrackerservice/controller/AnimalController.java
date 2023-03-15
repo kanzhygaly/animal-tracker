@@ -67,4 +67,11 @@ public class AnimalController {
         animalService.deleteAnimal(animalId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping(path = "/{animalId}/types/{typeId}")
+    public ResponseEntity<AnimalResponse> addTypeToAnimal(@PathVariable("animalId") @Min(1) Long animalId,
+                                                          @PathVariable("typeId") @Min(1) Long typeId) {
+        // TODO: implement
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
 }

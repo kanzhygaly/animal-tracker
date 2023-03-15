@@ -23,6 +23,9 @@ public class AnimalRepositoryImpl implements AnimalRepository {
             "chipping_date_time, chipper_id, chipping_location_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING animal_id";
     private static final String UPDATE = "UPDATE animal SET weight = ?, length = ?, height = ?, gender = ?, life_status = ?," +
             "chipper_id = ?, chipping_location_id = ? WHERE animal_id = ?";
+
+    private static final String UPDATE_DEAD = "UPDATE animal SET weight = ?, length = ?, height = ?, gender = ?, " +
+            "life_status = ?, chipper_id = ?, chipping_location_id = ?, death_date_time = ? WHERE animal_id = ?";
     private static final String DELETE = "DELETE FROM animal WHERE animal_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -45,6 +48,11 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     @Override
     public int update(Long animalId, AnimalUpdateRequest payload) {
+        if (LifeStatus.DEAD.equals(payload.lifeStatus())) {
+            return jdbcTemplate.update(UPDATE_DEAD, payload.weight(), payload.length(), payload.height(), payload.gender().name(),
+                    payload.lifeStatus().name(), payload.chipperId(), payload.chippingLocationId(),
+                    Timestamp.valueOf(LocalDateTime.now()), animalId);
+        }
         return jdbcTemplate.update(UPDATE, payload.weight(), payload.length(), payload.height(), payload.gender().name(),
                 payload.lifeStatus().name(), payload.chipperId(), payload.chippingLocationId(), animalId);
     }

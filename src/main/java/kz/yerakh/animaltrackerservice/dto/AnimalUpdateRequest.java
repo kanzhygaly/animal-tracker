@@ -1,10 +1,7 @@
 package kz.yerakh.animaltrackerservice.dto;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.List;
 
 public record AnimalUpdateRequest(@NotNull @Min(1) Float weight,
                                   @NotNull @Min(1) Float length,
