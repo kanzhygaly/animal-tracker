@@ -26,7 +26,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     private static final String LIKE_LAST_NAME = " LOWER(last_name) LIKE LOWER(?)";
     private static final String LIKE_EMAIL = " LOWER(email) LIKE LOWER(?)";
     private static final String LIMIT_AND_OFFSET = " ORDER BY account_id LIMIT ? OFFSET ?";
-    private static final String INSERT = "INSERT INTO account(first_name, last_name, email, password) VALUES(?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO account(first_name, last_name, email, password) VALUES(?, ?, ?, ?)" +
+            " RETURNING account_id";
     private static final String UPDATE = "UPDATE account SET first_name = ?, last_name = ?, email = ?, password = ? " +
             "WHERE account_id = ?";
     private static final String DELETE = "DELETE FROM account WHERE account_id = ?";
@@ -78,18 +79,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Integer save(AccountRequest payload) {
-        var keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement(INSERT);
-            ps.setString(1, payload.firstName());
-            ps.setString(2, payload.lastName());
-            ps.setString(3, payload.email());
-            ps.setString(4, payload.password());
-            return ps;
-        }, keyHolder);
-
-        return (Integer) keyHolder.getKey();
+        return jdbcTemplate.queryForObject(INSERT, Integer.class, payload.firstName(), payload.lastName(),
+                payload.email(), payload.password());
     }
 
     @Override

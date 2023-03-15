@@ -5,7 +5,6 @@ import kz.yerakh.animaltrackerservice.repository.AnimalTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -15,7 +14,7 @@ import java.util.Optional;
 public class AnimalTypeRepositoryImpl implements AnimalTypeRepository {
 
     private static final String SELECT = "SELECT * FROM animal_type WHERE type_id = ?";
-    private static final String INSERT = "INSERT INTO animal_type(type_name) VALUES(?)";
+    private static final String INSERT = "INSERT INTO animal_type(type_name) VALUES(?) RETURNING type_id";
     private static final String UPDATE = "UPDATE animal_type SET type_name = ? WHERE type_id = ?";
     private static final String DELETE = "DELETE FROM animal_type WHERE type_id = ?";
 
@@ -32,15 +31,7 @@ public class AnimalTypeRepositoryImpl implements AnimalTypeRepository {
 
     @Override
     public Long save(String typeName) {
-        var keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement(INSERT);
-            ps.setString(1, typeName);
-            return ps;
-        }, keyHolder);
-
-        return (Long) keyHolder.getKey();
+        return jdbcTemplate.queryForObject(INSERT, Long.class, typeName);
     }
 
     @Override

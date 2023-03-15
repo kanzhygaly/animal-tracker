@@ -4,12 +4,10 @@ import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
 import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
 import kz.yerakh.animaltrackerservice.dto.LifeStatus;
 import kz.yerakh.animaltrackerservice.model.Animal;
-import kz.yerakh.animaltrackerservice.model.AnimalType;
 import kz.yerakh.animaltrackerservice.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -22,7 +20,7 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     private static final String SELECT = "SELECT * FROM animal WHERE animal_id = ?";
     private static final String INSERT = "INSERT INTO animal(weight, length, height, gender, life_status, " +
-            "chipping_date_time, chipper_id, chipping_location_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+            "chipping_date_time, chipper_id, chipping_location_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING animal_id";
     private static final String UPDATE = "UPDATE animal SET weight = ?, length = ?, height = ?, gender = ?, life_status = ?," +
             "chipper_id = ?, chipping_location_id = ? WHERE animal_id = ?";
     private static final String DELETE = "DELETE FROM animal WHERE animal_id = ?";
@@ -40,22 +38,9 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     @Override
     public Long save(AnimalRequest payload) {
-        var keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement(INSERT);
-            ps.setFloat(1, payload.weight());
-            ps.setFloat(2, payload.length());
-            ps.setFloat(3, payload.height());
-            ps.setString(4, payload.gender().name());
-            ps.setString(5, LifeStatus.ALIVE.name());
-            ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setInt(7, payload.chipperId());
-            ps.setLong(8, payload.chippingLocationId());
-            return ps;
-        }, keyHolder);
-
-        return (Long) keyHolder.getKey();
+        return jdbcTemplate.queryForObject(INSERT, Long.class, payload.weight(), payload.length(), payload.height(),
+                payload.gender().name(), LifeStatus.ALIVE.name(), Timestamp.valueOf(LocalDateTime.now()),
+                payload.chipperId(), payload.chippingLocationId());
     }
 
     @Override

@@ -6,7 +6,6 @@ import kz.yerakh.animaltrackerservice.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,7 +15,7 @@ import java.util.Optional;
 public class LocationRepositoryImpl implements LocationRepository {
 
     private static final String SELECT = "SELECT * FROM location WHERE location_id = ?";
-    private static final String INSERT = "INSERT INTO location(latitude, longitude) VALUES(?, ?)";
+    private static final String INSERT = "INSERT INTO location(latitude, longitude) VALUES(?, ?) RETURNING location_id";
     private static final String UPDATE = "UPDATE location SET latitude = ?, longitude = ? WHERE location_id = ?";
     private static final String DELETE = "DELETE FROM location WHERE location_id = ?";
 
@@ -33,16 +32,7 @@ public class LocationRepositoryImpl implements LocationRepository {
 
     @Override
     public Long save(LocationRequest payload) {
-        var keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement(INSERT);
-            ps.setDouble(1, payload.latitude());
-            ps.setDouble(2, payload.longitude());
-            return ps;
-        }, keyHolder);
-
-        return (Long) keyHolder.getKey();
+        return jdbcTemplate.queryForObject(INSERT, Long.class, payload.latitude(), payload.longitude());
     }
 
     @Override
