@@ -2,6 +2,7 @@ package kz.yerakh.animaltrackerservice.service.impl;
 
 import kz.yerakh.animaltrackerservice.dto.*;
 import kz.yerakh.animaltrackerservice.exception.DuplicateItemException;
+import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.model.Animal;
@@ -9,6 +10,7 @@ import kz.yerakh.animaltrackerservice.repository.*;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
 import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,7 +22,7 @@ public class AnimalServiceImpl implements AnimalService {
 
     private final AnimalRepository animalRepository;
     private final AnimalTypeRepository animalTypeRepository;
-    private final AnimalAnimalTypeRepository animalAnimalTypeRepository;
+    private final TypeOfAnimalRepository typeOfAnimalRepository;
     private final AnimalLocationRepository animalLocationRepository;
     private final AccountRepository accountRepository;
     private final LocationRepository locationRepository;
@@ -51,7 +53,7 @@ public class AnimalServiceImpl implements AnimalService {
         Long animalId = animalRepository.save(payload);
 
         for (Long typeId : payload.animalTypes()) {
-            animalAnimalTypeRepository.save(animalId, typeId);
+            typeOfAnimalRepository.save(animalId, typeId);
         }
 
         return animalRepository.find(animalId)
@@ -90,23 +92,66 @@ public class AnimalServiceImpl implements AnimalService {
     @Override
     public AnimalResponse addTypeToAnimal(Long animalId, Long typeId) {
         checkIfAnimalExist(animalId);
-        if (animalTypeRepository.find(typeId).isEmpty()) {
+        checkIfAnimalTypeExist(typeId);
+        try {
+            typeOfAnimalRepository.save(animalId, typeId);
+        } catch (DuplicateKeyException ex) {
+            throw new EntryAlreadyExistException();
+        }
+        return animalRepository.find(animalId)
+                .map(this::mapAnimal)
+                .orElseThrow(EntryNotFoundException::new);
+    }
+
+    @Override
+    public AnimalResponse updateTypeOfAnimal(Long animalId, UpdateTypeOfAnimalRequest payload) {
+        checkIfAnimalExist(animalId);
+        checkIfAnimalTypeExist(payload.oldTypeId());
+        checkIfAnimalTypeExist(payload.newTypeId());
+        if (!typeOfAnimalRepository.exist(animalId, payload.oldTypeId())) {
             throw new EntryNotFoundException();
         }
-        // TODO: implement
-        return null;
+
+        try {
+            typeOfAnimalRepository.save(animalId, payload.newTypeId());
+        } catch (DuplicateKeyException ex) {
+            throw new EntryAlreadyExistException();
+        }
+        typeOfAnimalRepository.delete(animalId, payload.oldTypeId());
+
+        return animalRepository.find(animalId)
+                .map(this::mapAnimal)
+                .orElseThrow(EntryNotFoundException::new);
+    }
+
+    @Override
+    public AnimalResponse deleteTypeFromAnimal(Long animalId, Long typeId) {
+        checkIfAnimalExist(animalId);
+        checkIfAnimalTypeExist(typeId);
+
+        var animalTypes = typeOfAnimalRepository.findAnimalTypes(animalId);
+        if (!animalTypes.contains(typeId)) {
+            throw new EntryNotFoundException();
+        }
+        if (animalTypes.size() == 1 && animalTypes.contains(typeId)) {
+            throw new InvalidValueException();
+        }
+
+        return animalRepository.find(animalId)
+                .map(this::mapAnimal)
+                .orElseThrow(EntryNotFoundException::new);
     }
 
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
         return AnimalResponse.builder(animal)
-                .animalTypes(animalAnimalTypeRepository.findAnimalTypes(animal.animalId()))
+                .animalTypes(typeOfAnimalRepository.findAnimalTypes(animal.animalId()))
                 .visitedLocations(visitedLocations)
                 .build();
     }
 
     private AnimalResponse mapAnimal(Animal animal) {
         return AnimalResponse.builder(animal)
-                .animalTypes(animalAnimalTypeRepository.findAnimalTypes(animal.animalId()))
+                .animalTypes(typeOfAnimalRepository.findAnimalTypes(animal.animalId()))
                 .visitedLocations(animalLocationRepository.findLocations(animal.animalId()))
                 .build();
     }
@@ -120,6 +165,12 @@ public class AnimalServiceImpl implements AnimalService {
 
     private void checkIfAnimalExist(Long animalId) {
         if (animalRepository.find(animalId).isEmpty()) {
+            throw new EntryNotFoundException();
+        }
+    }
+
+    private void checkIfAnimalTypeExist(Long typeId) {
+        if (animalTypeRepository.find(typeId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }

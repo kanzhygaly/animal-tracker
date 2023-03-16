@@ -51,14 +51,14 @@ public class AnimalController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimalResponse> addAnimal(@RequestBody @Valid AnimalRequest animalRequest) {
-        return new ResponseEntity<>(animalService.addAnimal(animalRequest), HttpStatus.CREATED);
+    public ResponseEntity<AnimalResponse> addAnimal(@RequestBody @Valid AnimalRequest request) {
+        return new ResponseEntity<>(animalService.addAnimal(request), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{animalId}")
     public ResponseEntity<AnimalResponse> updateAnimal(@PathVariable("animalId") @Min(1) Long animalId,
-                                                       @RequestBody @Valid AnimalUpdateRequest animalUpdateRequest) {
-        return ResponseEntity.ok(animalService.updateAnimal(animalId, animalUpdateRequest));
+                                                       @RequestBody @Valid AnimalUpdateRequest request) {
+        return ResponseEntity.ok(animalService.updateAnimal(animalId, request));
     }
 
     @DeleteMapping(path = "/{animalId}")
@@ -72,5 +72,17 @@ public class AnimalController {
     public ResponseEntity<AnimalResponse> addTypeToAnimal(@PathVariable("animalId") @Min(1) Long animalId,
                                                           @PathVariable("typeId") @Min(1) Long typeId) {
         return new ResponseEntity<>(animalService.addTypeToAnimal(animalId, typeId), HttpStatus.CREATED);
+    }
+
+    @PutMapping(path = "/{animalId}/types")
+    public ResponseEntity<AnimalResponse> updateTypeOfAnimal(@PathVariable("animalId") @Min(1) Long animalId,
+                                                          @RequestBody @Valid UpdateTypeOfAnimalRequest request) {
+        return ResponseEntity.ok(animalService.updateTypeOfAnimal(animalId, request));
+    }
+
+    @DeleteMapping(path = "/{animalId}/types/{typeId}")
+    public ResponseEntity<AnimalResponse> deleteTypeFromAnimal(@PathVariable("animalId") @Min(1) Long animalId,
+                                                          @PathVariable("typeId") @Min(1) Long typeId) {
+        return ResponseEntity.ok(animalService.deleteTypeFromAnimal(animalId, typeId));
     }
 }

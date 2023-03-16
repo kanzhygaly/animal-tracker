@@ -1,9 +1,6 @@
 package kz.yerakh.animaltrackerservice.service;
 
-import kz.yerakh.animaltrackerservice.dto.AnimalRequest;
-import kz.yerakh.animaltrackerservice.dto.AnimalResponse;
-import kz.yerakh.animaltrackerservice.dto.AnimalSearchCriteria;
-import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
+import kz.yerakh.animaltrackerservice.dto.*;
 
 import java.util.List;
 
@@ -20,4 +17,8 @@ public interface AnimalService {
     void deleteAnimal(Long animalId);
 
     AnimalResponse addTypeToAnimal(Long animalId, Long typeId);
+
+    AnimalResponse updateTypeOfAnimal(Long animalId, UpdateTypeOfAnimalRequest payload);
+
+    AnimalResponse deleteTypeFromAnimal(Long animalId, Long typeId);
 }

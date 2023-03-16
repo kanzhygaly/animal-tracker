@@ -2,9 +2,11 @@ package kz.yerakh.animaltrackerservice.repository;
 
 import java.util.List;
 
-public interface AnimalAnimalTypeRepository {
+public interface TypeOfAnimalRepository {
 
     List<Long> findAnimalTypes(Long animalId);
+
+    boolean exist(Long animalId, Long typeId);
 
     int save(Long animalId, Long typeId);
 
