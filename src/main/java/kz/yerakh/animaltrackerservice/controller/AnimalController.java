@@ -63,7 +63,6 @@ public class AnimalController {
 
     @DeleteMapping(path = "/{animalId}")
     public ResponseEntity<String> deleteAnimal(@PathVariable("animalId") @Min(1) Long animalId) {
-        // TODO: Animal left the chipping location and at the same time has other locations. If yes, return 400
         animalService.deleteAnimal(animalId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

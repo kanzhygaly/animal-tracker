@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountResponse> search(AccountSearchCriteria payload) {
-        return accountRepository.findByParams(payload).stream()
+        return accountRepository.find(payload).stream()
                 .map(value -> AccountResponse.builder(value).build())
                 .toList();
     }

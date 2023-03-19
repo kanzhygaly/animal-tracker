@@ -35,26 +35,26 @@ public class AccountRepositoryImpl implements AccountRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Account> findByParams(AccountSearchCriteria accountSearchCriteria) {
+    public List<Account> find(AccountSearchCriteria payload) {
         ArrayList<Object> params = new ArrayList<>();
         var where = new StringBuilder(WHERE);
-        if (accountSearchCriteria.firstName() != null && !accountSearchCriteria.firstName().isEmpty()) {
+        if (payload.firstName() != null && !payload.firstName().isEmpty()) {
             where.append(LIKE_FIRST_NAME);
-            params.add(accountSearchCriteria.firstName());
+            params.add(payload.firstName());
         }
-        if (accountSearchCriteria.lastName() != null && !accountSearchCriteria.lastName().isEmpty()) {
+        if (payload.lastName() != null && !payload.lastName().isEmpty()) {
             if (where.length() > 6) {
                 where.append(AND);
             }
             where.append(LIKE_LAST_NAME);
-            params.add(accountSearchCriteria.lastName());
+            params.add(payload.lastName());
         }
-        if (accountSearchCriteria.email() != null && !accountSearchCriteria.email().isEmpty()) {
+        if (payload.email() != null && !payload.email().isEmpty()) {
             if (where.length() > 6) {
                 where.append(AND);
             }
             where.append(LIKE_EMAIL);
-            params.add(accountSearchCriteria.email());
+            params.add(payload.email());
         }
 
         var query = new StringBuilder(SELECT);
@@ -62,8 +62,8 @@ public class AccountRepositoryImpl implements AccountRepository {
             query.append(where);
         }
         query.append(LIMIT_AND_OFFSET);
-        params.add(accountSearchCriteria.size());
-        params.add(accountSearchCriteria.from());
+        params.add(payload.size());
+        params.add(payload.from());
 
         return jdbcTemplate.query(query.toString(), new Account.AccountRowMapper(), params.toArray());
     }

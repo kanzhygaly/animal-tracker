@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -36,8 +35,9 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public List<AnimalResponse> search(AnimalSearchCriteria payload) {
-        // TODO: implement
-        return Collections.emptyList();
+        return animalRepository.find(payload).stream()
+                .map(this::mapAnimal)
+                .toList();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AnimalServiceImpl implements AnimalService {
     @Override
     public AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest payload) {
         checkIfEntriesExist(payload.chipperId(), payload.chippingLocationId());
-        var animal = animalRepository.find(animalId).orElseThrow(EntryNotFoundException::new);
+        var animal = checkIfAnimalExist(animalId);
 
         if (payload.lifeStatus().equals(LifeStatus.ALIVE)
                 && LifeStatus.DEAD.equals(animal.lifeStatus())) {
@@ -85,7 +85,11 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public void deleteAnimal(Long animalId) {
-        checkIfAnimalExist(animalId);
+        var animal = checkIfAnimalExist(animalId);
+        var visitedLocations = animalLocationRepository.findLocations(animalId);
+        if (!visitedLocations.isEmpty() && !visitedLocations.contains(animal.chippingLocationId())) {
+            throw new InvalidValueException();
+        }
         animalRepository.delete(animalId);
     }
 
@@ -163,10 +167,8 @@ public class AnimalServiceImpl implements AnimalService {
         }
     }
 
-    private void checkIfAnimalExist(Long animalId) {
-        if (animalRepository.find(animalId).isEmpty()) {
-            throw new EntryNotFoundException();
-        }
+    private Animal checkIfAnimalExist(Long animalId) {
+        return animalRepository.find(animalId).orElseThrow(EntryNotFoundException::new);
     }
 
     private void checkIfAnimalTypeExist(Long typeId) {

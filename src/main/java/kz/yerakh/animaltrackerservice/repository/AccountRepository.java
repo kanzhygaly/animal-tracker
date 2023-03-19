@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AccountRepository {
 
-    List<Account> findByParams(AccountSearchCriteria accountSearchCriteria);
+    List<Account> find(AccountSearchCriteria payload);
 
     Optional<Account> find(Integer accountId);
 

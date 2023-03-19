@@ -57,7 +57,7 @@ class AccountRepositoryIntegrationTest {
         var searchCriteria = AccountSearchCriteria.builder().email("john.smith@gmail.com")
                 .from(0).size(10).build();
 
-        var result = testObj.findByParams(searchCriteria);
+        var result = testObj.find(searchCriteria);
         assertThat(result).hasSize(1);
 
         int rows = testObj.delete(result.get(0).accountId());
@@ -70,7 +70,7 @@ class AccountRepositoryIntegrationTest {
         var searchCriteria = AccountSearchCriteria.builder().firstName("john").lastName("smith")
                 .from(0).size(10).build();
 
-        var result = testObj.findByParams(searchCriteria);
+        var result = testObj.find(searchCriteria);
         assertThat(result).hasSize(2);
     }
 
@@ -80,7 +80,7 @@ class AccountRepositoryIntegrationTest {
         var searchCriteria = AccountSearchCriteria.builder().firstName("").lastName("smith").email("")
                 .from(0).size(10).build();
 
-        var result = testObj.findByParams(searchCriteria);
+        var result = testObj.find(searchCriteria);
         assertThat(result).hasSize(3);
     }
 
@@ -90,7 +90,7 @@ class AccountRepositoryIntegrationTest {
         var searchCriteria = AccountSearchCriteria.builder().firstName("abraham").lastName("").email("alincoln@gmail.com")
                 .from(0).size(10).build();
 
-        var result = testObj.findByParams(searchCriteria);
+        var result = testObj.find(searchCriteria);
         assertThat(result).hasSize(1);
     }
 
@@ -100,7 +100,7 @@ class AccountRepositoryIntegrationTest {
         var searchCriteria = AccountSearchCriteria.builder()
                 .from(0).size(2).build();
 
-        var result = testObj.findByParams(searchCriteria);
+        var result = testObj.find(searchCriteria);
         assertThat(result).hasSize(2);
         assertThat(result.get(0).accountId()).isEqualTo(1);
         assertThat(result.get(1).accountId()).isEqualTo(2);
@@ -111,7 +111,7 @@ class AccountRepositoryIntegrationTest {
     void findBy_noResults_success() {
         var searchCriteria = AccountSearchCriteria.builder()
                 .from(0).size(2).build();
-        assertThat(testObj.findByParams(searchCriteria)).isEmpty();
+        assertThat(testObj.find(searchCriteria)).isEmpty();
 
         assertThat(testObj.find(1)).isEmpty();
     }
