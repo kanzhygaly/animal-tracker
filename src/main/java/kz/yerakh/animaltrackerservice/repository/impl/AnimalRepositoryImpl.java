@@ -6,6 +6,7 @@ import kz.yerakh.animaltrackerservice.dto.AnimalUpdateRequest;
 import kz.yerakh.animaltrackerservice.dto.LifeStatus;
 import kz.yerakh.animaltrackerservice.model.Animal;
 import kz.yerakh.animaltrackerservice.repository.AnimalRepository;
+import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,6 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     private static final String SELECT = "SELECT * FROM animal";
     private static final String WHERE = " WHERE";
-    private static final String AND = " AND";
     private static final String CHIPPING_DATE_GREATER_THAN = " chipping_date_time > ?";
     private static final String CHIPPING_DATE_LOWER_THAN = " chipping_date_time < ?";
     private static final String CHIPPER_ID_EQUAL_TO = " chipper_id = ?";
@@ -61,37 +61,27 @@ public class AnimalRepositoryImpl implements AnimalRepository {
             params.add(payload.startDateTime());
         }
         if (payload.endDateTime() != null) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(CHIPPING_DATE_LOWER_THAN);
             params.add(payload.endDateTime());
         }
         if (payload.chipperId() != null) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(CHIPPER_ID_EQUAL_TO);
             params.add(payload.chipperId());
         }
         if (payload.chippingLocationId() != null) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(CHIPPING_LOCATION_ID_EQUAL_TO);
             params.add(payload.chippingLocationId());
         }
         if (payload.lifeStatus() != null) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(LIFE_STATUS_EQUAL_TO);
             params.add(payload.lifeStatus());
         }
         if (payload.gender() != null) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(GENDER_EQUAL_TO);
             params.add(payload.gender());
         }

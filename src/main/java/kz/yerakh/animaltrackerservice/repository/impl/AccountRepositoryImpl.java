@@ -4,10 +4,10 @@ import kz.yerakh.animaltrackerservice.dto.AccountRequest;
 import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.Account;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
+import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ public class AccountRepositoryImpl implements AccountRepository {
     private static final String SELECT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
     private static final String SELECT = "SELECT account_id, first_name, last_name, email FROM account";
     private static final String WHERE = " WHERE";
-    private static final String AND = " AND";
     private static final String LIKE_FIRST_NAME = " LOWER(first_name) LIKE LOWER(?)";
     private static final String LIKE_LAST_NAME = " LOWER(last_name) LIKE LOWER(?)";
     private static final String LIKE_EMAIL = " LOWER(email) LIKE LOWER(?)";
@@ -43,16 +42,12 @@ public class AccountRepositoryImpl implements AccountRepository {
             params.add(payload.firstName());
         }
         if (payload.lastName() != null && !payload.lastName().isEmpty()) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(LIKE_LAST_NAME);
             params.add(payload.lastName());
         }
         if (payload.email() != null && !payload.email().isEmpty()) {
-            if (where.length() > 6) {
-                where.append(AND);
-            }
+            Utils.appendAndIfNeeded(where);
             where.append(LIKE_EMAIL);
             params.add(payload.email());
         }
