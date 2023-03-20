@@ -24,10 +24,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="gender" type="varchar(6)">
-                <constraints nullable="false"/>
+                <constraints checkConstraint="life_status IN('MALE','FEMALE','OTHER')" nullable="false"/>
             </column>
             <column name="life_status" type="varchar(5)" defaultValue="ALIVE">
-                <constraints nullable="false"/>
+                <constraints checkConstraint="life_status IN('ALIVE','DEAD')" nullable="false"/>
             </column>
             <column name="chipping_date_time" type="timestamp">
                 <constraints nullable="false"/>
