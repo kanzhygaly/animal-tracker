@@ -12,6 +12,8 @@ public interface AnimalRepository {
 
     Optional<Animal> find(Long animalId);
 
+    Optional<Animal> findByChipperId(Integer chipperId);
+
     List<Animal> find(AnimalSearchCriteria payload);
 
     Long save(AnimalRequest payload);

@@ -5,8 +5,10 @@ import kz.yerakh.animaltrackerservice.dto.AccountResponse;
 import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
 import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
+import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.exception.ModifyAccountNotFoundException;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
+import kz.yerakh.animaltrackerservice.repository.AnimalRepository;
 import kz.yerakh.animaltrackerservice.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,6 +21,7 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final AnimalRepository animalRepository;
 
     @Override
     public AccountResponse addAccount(AccountRequest payload) {
@@ -64,6 +67,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(Integer accountId) {
+        checkIfAccountConnectedToAnimal(accountId);
         checkIfAccountExist(accountId);
         accountRepository.delete(accountId);
     }
@@ -71,6 +75,12 @@ public class AccountServiceImpl implements AccountService {
     private void checkIfAccountExist(Integer accountId) {
         if (accountRepository.find(accountId).isEmpty()) {
             throw new ModifyAccountNotFoundException();
+        }
+    }
+
+    private void checkIfAccountConnectedToAnimal(Integer accountId) {
+        if (animalRepository.findByChipperId(accountId).isPresent()) {
+            throw new InvalidValueException();
         }
     }
 }

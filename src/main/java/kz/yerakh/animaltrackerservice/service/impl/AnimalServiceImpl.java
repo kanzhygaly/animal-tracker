@@ -72,7 +72,7 @@ public class AnimalServiceImpl implements AnimalService {
         }
 
         var visitedLocations = animalLocationRepository.findLocations(animalId);
-        if (payload.chippingLocationId().equals(visitedLocations.get(0))) {
+        if (!visitedLocations.isEmpty() && visitedLocations.get(0).equals(payload.chippingLocationId())) {
             throw new InvalidValueException();
         }
 
@@ -137,7 +137,7 @@ public class AnimalServiceImpl implements AnimalService {
         if (!animalTypes.contains(typeId)) {
             throw new EntryNotFoundException();
         }
-        if (animalTypes.size() == 1 && animalTypes.contains(typeId)) {
+        if (animalTypes.size() == 1 && animalTypes.get(0).equals(typeId)) {
             throw new InvalidValueException();
         }
 

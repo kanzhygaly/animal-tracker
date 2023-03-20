@@ -49,7 +49,6 @@ public class AccountController {
 
     @DeleteMapping(path = "/{accountId}")
     public ResponseEntity<String> deleteAccount(@PathVariable("accountId") @Min(1) Integer accountId) {
-        // TODO: check if Account connected to an Animal. If yes, return 400
         accountService.deleteAccount(accountId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

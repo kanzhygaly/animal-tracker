@@ -29,6 +29,7 @@ class TypeOfAnimalRepositoryIntegrationTest {
     @Sql(value = "/db/populate_type_of_animal.sql")
     void exist_success() {
         assertThat(testObj.exist(1L, 1L)).isTrue();
+        assertThat(testObj.findAnimals(1L)).hasSize(1);
         assertThat(testObj.exist(100L, 100L)).isFalse();
     }
 

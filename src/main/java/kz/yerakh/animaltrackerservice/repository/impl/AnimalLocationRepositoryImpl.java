@@ -12,6 +12,7 @@ import java.util.List;
 public class AnimalLocationRepositoryImpl implements AnimalLocationRepository {
 
     private static final String SELECT = "SELECT location_id FROM animal_location WHERE animal_id = ? ORDER BY location_id";
+    private static final String SELECT_BY_LOCATION = "SELECT animal_id FROM animal_location WHERE location_id = ? ORDER BY animal_id";
     private static final String INSERT = "INSERT INTO animal_location(animal_id, location_id) VALUES(?, ?)";
     private static final String DELETE = "DELETE FROM animal_location WHERE animal_id = ? AND location_id = ?";
 
@@ -20,6 +21,11 @@ public class AnimalLocationRepositoryImpl implements AnimalLocationRepository {
     @Override
     public List<Long> findLocations(Long animalId) {
         return jdbcTemplate.queryForList(SELECT, Long.class, animalId);
+    }
+
+    @Override
+    public List<Long> findAnimals(Long locationId) {
+        return jdbcTemplate.queryForList(SELECT_BY_LOCATION, Long.class, locationId);
     }
 
     @Override

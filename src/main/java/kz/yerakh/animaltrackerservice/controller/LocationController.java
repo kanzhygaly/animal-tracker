@@ -35,7 +35,6 @@ public class LocationController {
 
     @DeleteMapping(path = "/{pointId}")
     public ResponseEntity<String> deleteLocation(@PathVariable("pointId") @Min(1) Long pointId) {
-        // TODO: check if Location connected to an Animal. If yes, return 400
         locationService.deleteLocation(pointId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

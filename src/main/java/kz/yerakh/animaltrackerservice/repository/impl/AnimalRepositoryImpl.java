@@ -23,6 +23,7 @@ import java.util.Optional;
 public class AnimalRepositoryImpl implements AnimalRepository {
 
     private static final String SELECT_BY_ID = "SELECT * FROM animal WHERE animal_id = ?";
+    private static final String SELECT_BY_CHIPPER_ID = "SELECT * FROM animal WHERE chipper_id = ?";
     private static final String INSERT = "INSERT INTO animal(weight, length, height, gender, life_status, " +
             "chipping_date_time, chipper_id, chipping_location_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING animal_id";
     private static final String UPDATE = "UPDATE animal SET weight = ?, length = ?, height = ?, gender = ?, life_status = ?," +
@@ -47,6 +48,15 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     public Optional<Animal> find(Long animalId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_ID, new Animal.AnimalRowMapper(), animalId));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Animal> findByChipperId(Integer chipperId) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_CHIPPER_ID, new Animal.AnimalRowMapper(), chipperId));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }

@@ -6,6 +6,8 @@ public interface AnimalLocationRepository {
 
     List<Long> findLocations(Long animalId);
 
+    List<Long> findAnimals(Long locationId);
+
     int save(Long animalId, Long locationId);
 
     int delete(Long animalId, Long locationId);

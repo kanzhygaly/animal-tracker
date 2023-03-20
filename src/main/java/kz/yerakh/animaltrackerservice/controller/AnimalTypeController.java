@@ -35,7 +35,6 @@ public class AnimalTypeController {
 
     @DeleteMapping(path = "/{typeId}")
     public ResponseEntity<String> deleteAnimalType(@PathVariable("typeId") @Min(1) Long typeId) {
-        // TODO: check if Type connected to an Animal. If yes, return 400
         animalTypeService.deleteAnimalType(typeId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

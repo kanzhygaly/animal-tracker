@@ -12,6 +12,7 @@ import java.util.List;
 public class TypeOfAnimalRepositoryImpl implements TypeOfAnimalRepository {
 
     private static final String SELECT = "SELECT type_id FROM animal_animal_type WHERE animal_id = ? ORDER BY type_id";
+    private static final String SELECT_BY_TYPE = "SELECT animal_id FROM animal_animal_type WHERE type_id = ? ORDER BY animal_id";
     private static final String EXIST = "SELECT count(*) FROM animal_animal_type WHERE animal_id = ? and type_id = ?";
     private static final String INSERT = "INSERT INTO animal_animal_type(animal_id, type_id) VALUES(?, ?)";
     private static final String DELETE = "DELETE FROM animal_animal_type WHERE animal_id = ? AND type_id = ?";
@@ -21,6 +22,11 @@ public class TypeOfAnimalRepositoryImpl implements TypeOfAnimalRepository {
     @Override
     public List<Long> findAnimalTypes(Long animalId) {
         return jdbcTemplate.queryForList(SELECT, Long.class, animalId);
+    }
+
+    @Override
+    public List<Long> findAnimals(Long typeId) {
+        return jdbcTemplate.queryForList(SELECT_BY_TYPE, Long.class, typeId);
     }
 
     @Override

@@ -23,6 +23,7 @@ class AnimalLocationRepositoryIntegrationTest {
 
         var visitedLocations = testObj.findLocations(animalId);
         assertThat(visitedLocations).hasSize(1);
+        assertThat(testObj.findAnimals(typeId)).hasSize(1);
     }
 
     @Test
