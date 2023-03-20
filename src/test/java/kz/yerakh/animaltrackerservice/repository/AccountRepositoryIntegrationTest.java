@@ -20,19 +20,18 @@ class AccountRepositoryIntegrationTest {
     @Test
     void save_find_and_update_success() {
         var email = "victor.hugo@gmail.com";
-        Integer id = testObj.save(new AccountRequest("Victor", "Hugo", email, "DummyPassword"));
+        var id = testObj.save(new AccountRequest("Victor", "Hugo", email, "DummyPassword"));
 
         var account = testObj.find(id);
         assertThat(account).isPresent();
-        var accountId = account.get().accountId();
 
         var newEmail = "hugo.victor@gmail.com";
         var updated = new AccountRequest(account.get().firstName(), account.get().lastName(), newEmail, "newPassword");
 
-        int rows = testObj.update(accountId, updated);
+        int rows = testObj.update(id, updated);
         assertThat(rows).isEqualTo(1);
 
-        account = testObj.find(accountId);
+        account = testObj.find(id);
         assertThat(account).isPresent();
         assertThat(account.get().email()).isEqualTo(newEmail);
     }

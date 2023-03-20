@@ -18,17 +18,15 @@ class LocationRepositoryIntegrationTest {
 
     @Test
     void save_find_and_update_success() {
-        Long id = testObj.save(new LocationRequest(1.0, 1.0));
+        var id = testObj.save(new LocationRequest(1.0, 1.0));
 
-        var location = testObj.find(id);
-        assertThat(location).isPresent();
-        var locationId = location.get().id();
+        assertThat(testObj.find(id)).isPresent();
 
         var updated = new LocationRequest(2.0, 1.0);
 
-        assertThat(testObj.update(locationId, updated)).isEqualTo(1);
+        assertThat(testObj.update(id, updated)).isEqualTo(1);
 
-        location = testObj.find(locationId);
+        var location = testObj.find(id);
         assertThat(location).isPresent();
         assertThat(location.get().latitude()).isEqualTo(updated.latitude());
         assertThat(location.get().longitude()).isEqualTo(updated.longitude());

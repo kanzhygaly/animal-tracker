@@ -18,17 +18,15 @@ class AnimalTypeRepositoryIntegrationTest {
     @Test
     void save_find_and_update_success() {
         String typeName = "lion";
-        Long id = testObj.save(typeName);
+        var id = testObj.save(typeName);
 
-        var animalType = testObj.find(id);
-        assertThat(animalType).isPresent();
-        var animalTypeId = animalType.get().id();
+        assertThat(testObj.find(id)).isPresent();
 
         String updated = "tiger";
 
-        assertThat(testObj.update(animalTypeId, updated)).isEqualTo(1);
+        assertThat(testObj.update(id, updated)).isEqualTo(1);
 
-        animalType = testObj.find(animalTypeId);
+        var animalType = testObj.find(id);
         assertThat(animalType).isPresent();
         assertThat(animalType.get().type()).isEqualTo(updated);
     }
