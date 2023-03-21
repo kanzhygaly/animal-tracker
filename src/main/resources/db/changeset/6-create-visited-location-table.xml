@@ -6,11 +6,11 @@
     <changeSet id="6-create-animal-location-table" author="Yerlan Akhmetov">
         <preConditions>
             <not>
-                <tableExists tableName="animal_location"/>
+                <tableExists tableName="visited_location"/>
             </not>
         </preConditions>
 
-        <createTable tableName="animal_location">
+        <createTable tableName="visited_location">
             <column name="visited_location_id" type="bigserial">
                 <constraints primaryKey="true" primaryKeyName="visited_location_id_pk"/>
             </column>
@@ -25,10 +25,10 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint tableName="animal_location" columnNames="animal_id, location_id"/>
+        <addUniqueConstraint tableName="visited_location" columnNames="animal_id, location_id"/>
 
         <rollback>
-            <dropTable tableName="animal_location"/>
+            <dropTable tableName="visited_location"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

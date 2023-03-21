@@ -2,7 +2,7 @@ package kz.yerakh.animaltrackerservice.repository.impl;
 
 import kz.yerakh.animaltrackerservice.dto.VisitedLocationSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.VisitedLocation;
-import kz.yerakh.animaltrackerservice.repository.AnimalLocationRepository;
+import kz.yerakh.animaltrackerservice.repository.VisitedLocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -16,16 +16,16 @@ import static kz.yerakh.animaltrackerservice.util.Utils.AND;
 
 @Repository
 @RequiredArgsConstructor
-public class AnimalLocationRepositoryImpl implements AnimalLocationRepository {
+public class VisitedLocationRepositoryImpl implements VisitedLocationRepository {
 
-    private static final String SELECT_BY_LOCATION = "SELECT location_id FROM animal_location WHERE animal_id = ? " +
+    private static final String SELECT_BY_LOCATION = "SELECT location_id FROM visited_location WHERE animal_id = ? " +
             "ORDER BY visited_date_time";
-    private static final String SELECT_BY_ANIMAL = "SELECT animal_id FROM animal_location WHERE location_id = ?";
-    private static final String INSERT = "INSERT INTO animal_location(animal_id, location_id, visited_date_time) VALUES(?, ?, ?)";
-    private static final String DELETE = "DELETE FROM animal_location WHERE animal_id = ? AND location_id = ?";
+    private static final String SELECT_BY_ANIMAL = "SELECT animal_id FROM visited_location WHERE location_id = ?";
+    private static final String INSERT = "INSERT INTO visited_location(animal_id, location_id, visited_date_time) VALUES(?, ?, ?)";
+    private static final String DELETE = "DELETE FROM visited_location WHERE animal_id = ? AND location_id = ?";
 
     private static final String SELECT = "SELECT visited_location_id, visited_date_time, location_id " +
-            "FROM animal_location WHERE animal_id = ?";
+            "FROM visited_location WHERE animal_id = ?";
     private static final String VISIT_DATE_GREATER_THAN = " visited_date_time > ?";
     private static final String VISIT_DATE_LOWER_THAN = " visited_date_time < ?";
     private static final String LIMIT_AND_OFFSET = " ORDER BY visited_date_time LIMIT ? OFFSET ?";

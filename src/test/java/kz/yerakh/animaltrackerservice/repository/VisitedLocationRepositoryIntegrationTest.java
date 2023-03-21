@@ -10,10 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-class AnimalLocationRepositoryIntegrationTest {
+class VisitedLocationRepositoryIntegrationTest {
 
     @Autowired
-    private AnimalLocationRepository testObj;
+    private VisitedLocationRepository testObj;
 
     @Test
     void save_and_find_success() {
@@ -27,13 +27,13 @@ class AnimalLocationRepositoryIntegrationTest {
     }
 
     @Test
-    @Sql(value = "/db/populate_animal_location.sql")
+    @Sql(value = "/db/populate_visited_location.sql")
     void save_violatesUniqueLatAndLong_throwsException() {
         assertThrows(DuplicateKeyException.class, () -> testObj.save(1L, 1L));
     }
 
     @Test
-    @Sql(value = "/db/populate_animal_location.sql")
+    @Sql(value = "/db/populate_visited_location.sql")
     void delete_success() {
         long animalId = 1;
         long typeId = 1;

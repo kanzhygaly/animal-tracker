@@ -5,7 +5,7 @@ import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.model.Location;
-import kz.yerakh.animaltrackerservice.repository.AnimalLocationRepository;
+import kz.yerakh.animaltrackerservice.repository.VisitedLocationRepository;
 import kz.yerakh.animaltrackerservice.repository.LocationRepository;
 import kz.yerakh.animaltrackerservice.service.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class LocationServiceImpl implements LocationService {
 
     private final LocationRepository locationRepository;
-    private final AnimalLocationRepository animalLocationRepository;
+    private final VisitedLocationRepository visitedLocationRepository;
 
     @Override
     public Location getLocation(Long locationId) {
@@ -63,7 +63,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     private void checkIfLocationConnectedToAnimal(Long locationId) {
-        if (!animalLocationRepository.findAnimals(locationId).isEmpty()) {
+        if (!visitedLocationRepository.findAnimals(locationId).isEmpty()) {
             throw new InvalidValueException();
         }
     }

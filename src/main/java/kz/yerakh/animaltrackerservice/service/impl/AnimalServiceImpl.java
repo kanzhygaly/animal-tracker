@@ -23,7 +23,7 @@ public class AnimalServiceImpl implements AnimalService {
     private final AnimalRepository animalRepository;
     private final AnimalTypeRepository animalTypeRepository;
     private final TypeOfAnimalRepository typeOfAnimalRepository;
-    private final AnimalLocationRepository animalLocationRepository;
+    private final VisitedLocationRepository visitedLocationRepository;
     private final AccountRepository accountRepository;
     private final LocationRepository locationRepository;
 
@@ -72,7 +72,7 @@ public class AnimalServiceImpl implements AnimalService {
             throw new InvalidValueException();
         }
 
-        var visitedLocations = animalLocationRepository.findLocations(animalId);
+        var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (!visitedLocations.isEmpty() && visitedLocations.get(0).equals(payload.chippingLocationId())) {
             throw new InvalidValueException();
         }
@@ -87,7 +87,7 @@ public class AnimalServiceImpl implements AnimalService {
     @Override
     public void deleteAnimal(Long animalId) {
         var animal = checkIfAnimalExist(animalId);
-        var visitedLocations = animalLocationRepository.findLocations(animalId);
+        var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (!visitedLocations.isEmpty() && !visitedLocations.contains(animal.chippingLocationId())) {
             throw new InvalidValueException();
         }
@@ -150,7 +150,7 @@ public class AnimalServiceImpl implements AnimalService {
     @Override
     public List<VisitedLocation> getVisitedLocations(VisitedLocationSearchCriteria payload) {
         checkIfAnimalExist(payload.animalId());
-        return animalLocationRepository.findLocations(payload);
+        return visitedLocationRepository.findLocations(payload);
     }
 
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
@@ -163,7 +163,7 @@ public class AnimalServiceImpl implements AnimalService {
     private AnimalResponse mapAnimal(Animal animal) {
         return AnimalResponse.builder(animal)
                 .animalTypes(typeOfAnimalRepository.findAnimalTypes(animal.animalId()))
-                .visitedLocations(animalLocationRepository.findLocations(animal.animalId()))
+                .visitedLocations(visitedLocationRepository.findLocations(animal.animalId()))
                 .build();
     }
 

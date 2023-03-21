@@ -5,7 +5,7 @@ import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 
 import java.util.List;
 
-public interface AnimalLocationRepository {
+public interface VisitedLocationRepository {
 
     List<Long> findLocations(Long animalId);
 
