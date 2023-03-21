@@ -54,12 +54,8 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     }
 
     @Override
-    public Optional<Animal> findByChipperId(Integer chipperId) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_CHIPPER_ID, new Animal.AnimalRowMapper(), chipperId));
-        } catch (EmptyResultDataAccessException ex) {
-            return Optional.empty();
-        }
+    public List<Animal> findByChipperId(Integer chipperId) {
+        return jdbcTemplate.query(SELECT_BY_CHIPPER_ID, new Animal.AnimalRowMapper(), chipperId);
     }
 
     @Override

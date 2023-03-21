@@ -79,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void checkIfAccountConnectedToAnimal(Integer accountId) {
-        if (animalRepository.findByChipperId(accountId).isPresent()) {
+        if (!animalRepository.findByChipperId(accountId).isEmpty()) {
             throw new InvalidValueException();
         }
     }
