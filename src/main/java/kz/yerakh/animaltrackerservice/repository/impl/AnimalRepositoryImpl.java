@@ -84,12 +84,12 @@ public class AnimalRepositoryImpl implements AnimalRepository {
         if (payload.lifeStatus() != null) {
             Utils.appendAndIfNeeded(where);
             where.append(LIFE_STATUS_EQUAL_TO);
-            params.add(payload.lifeStatus());
+            params.add(payload.lifeStatus().name());
         }
         if (payload.gender() != null) {
             Utils.appendAndIfNeeded(where);
             where.append(GENDER_EQUAL_TO);
-            params.add(payload.gender());
+            params.add(payload.gender().name());
         }
 
         var query = new StringBuilder(SELECT);

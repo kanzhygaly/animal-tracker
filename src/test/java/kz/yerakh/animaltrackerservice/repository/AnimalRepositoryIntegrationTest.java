@@ -67,9 +67,17 @@ class AnimalRepositoryIntegrationTest {
 
     @Test
     @Sql(value = "/db/populate_animal.sql")
-    void find_byStartDateTimeAndChipperId_success() {
+    void find_byStartDateTimeAndChipperId_returnsTwoEntries() {
         var criteria = AnimalSearchCriteria.builder().startDateTime(LocalDateTime.MIN).chipperId(102)
                 .from(0).size(10).build();
         assertThat(testObj.find(criteria)).hasSize(2);
+    }
+
+    @Test
+    @Sql(value = "/db/populate_animal.sql")
+    void find_byChipperIdAndChippingLocationIdAndLifeStatusAndGender_success() {
+        var criteria = AnimalSearchCriteria.builder().chipperId(102).chippingLocationId(10L).lifeStatus(LifeStatus.ALIVE)
+                .gender(Gender.FEMALE).from(0).size(10).build();
+        assertThat(testObj.find(criteria)).hasSize(1);
     }
 }
