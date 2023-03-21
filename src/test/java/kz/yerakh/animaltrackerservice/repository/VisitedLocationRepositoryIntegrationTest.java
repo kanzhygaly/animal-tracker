@@ -21,12 +21,15 @@ class VisitedLocationRepositoryIntegrationTest {
     @Test
     void save_and_find_success() {
         long animalId = 2;
-        long typeId = 3;
-        assertThat(testObj.save(animalId, typeId)).isEqualTo(1);
+        long locationId = 3;
+        var id = testObj.save(animalId, locationId);
 
-        var visitedLocations = testObj.findLocations(animalId);
-        assertThat(visitedLocations).hasSize(2);
-        assertThat(testObj.findAnimals(typeId)).hasSize(1);
+        var visitedLocation = testObj.findLocation(id);
+        assertThat(visitedLocation).isPresent();
+        assertThat(visitedLocation.get().locationPointId()).isEqualTo(locationId);
+        assertThat(visitedLocation.get().dateTimeOfVisitLocationPoint()).isNotNull();
+
+        assertThat(testObj.findAnimals(locationId)).hasSize(1);
     }
 
     @Test
@@ -39,14 +42,14 @@ class VisitedLocationRepositoryIntegrationTest {
     @Sql(value = "/db/populate_visited_location.sql")
     void delete_success() {
         long animalId = 1;
-        long typeId = 1;
-        assertThat(testObj.delete(animalId, typeId)).isEqualTo(1);
-        assertThat(testObj.findLocations(animalId)).doesNotContain(typeId);
+        long locationId = 1;
+        assertThat(testObj.delete(animalId, locationId)).isEqualTo(1);
+        assertThat(testObj.findLocations(animalId)).doesNotContain(locationId);
     }
 
     @Test
     @Sql(value = "/db/populate_visited_location.sql")
-    void findLocations_byStartDateTimeAndEndDateTime_returnsTwoEntries() {
+    void findLocations_byStartDateTimeAndEndDateTime_returnsTwoValues() {
         long animalId = 1;
         int size = testObj.findLocations(animalId, VisitedLocationSearchCriteria.builder().from(0).size(10).build()).size();
 

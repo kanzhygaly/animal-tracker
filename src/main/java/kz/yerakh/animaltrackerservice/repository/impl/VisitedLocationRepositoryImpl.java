@@ -4,6 +4,7 @@ import kz.yerakh.animaltrackerservice.dto.VisitedLocationSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 import kz.yerakh.animaltrackerservice.repository.VisitedLocationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static kz.yerakh.animaltrackerservice.util.Utils.AND;
 
@@ -18,10 +20,13 @@ import static kz.yerakh.animaltrackerservice.util.Utils.AND;
 @RequiredArgsConstructor
 public class VisitedLocationRepositoryImpl implements VisitedLocationRepository {
 
-    private static final String SELECT_BY_LOCATION = "SELECT location_id FROM visited_location WHERE animal_id = ? " +
+    private static final String SELECT_SINGLE = "SELECT visited_location_id, visited_date_time, location_id " +
+            "FROM visited_location WHERE visited_location_id = ?";
+    private static final String SELECT_BY_ANIMAL = "SELECT location_id FROM visited_location WHERE animal_id = ? " +
             "ORDER BY visited_date_time";
-    private static final String SELECT_BY_ANIMAL = "SELECT animal_id FROM visited_location WHERE location_id = ?";
-    private static final String INSERT = "INSERT INTO visited_location(animal_id, location_id, visited_date_time) VALUES(?, ?, ?)";
+    private static final String SELECT_BY_LOCATION = "SELECT animal_id FROM visited_location WHERE location_id = ?";
+    private static final String INSERT = "INSERT INTO visited_location(animal_id, location_id, visited_date_time) " +
+            "VALUES(?, ?, ?) RETURNING visited_location_id";
     private static final String DELETE = "DELETE FROM visited_location WHERE animal_id = ? AND location_id = ?";
 
     private static final String SELECT = "SELECT visited_location_id, visited_date_time, location_id " +
@@ -34,7 +39,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
 
     @Override
     public List<Long> findLocations(Long animalId) {
-        return jdbcTemplate.queryForList(SELECT_BY_LOCATION, Long.class, animalId);
+        return jdbcTemplate.queryForList(SELECT_BY_ANIMAL, Long.class, animalId);
     }
 
     @Override
@@ -66,13 +71,23 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     }
 
     @Override
-    public List<Long> findAnimals(Long locationId) {
-        return jdbcTemplate.queryForList(SELECT_BY_ANIMAL, Long.class, locationId);
+    public Optional<VisitedLocation> findLocation(Long visitedLocationId) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_SINGLE,
+                    new VisitedLocation.VisitedLocationRowMapper(), visitedLocationId));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public int save(Long animalId, Long locationId) {
-        return jdbcTemplate.update(INSERT, animalId, locationId, Timestamp.valueOf(LocalDateTime.now()));
+    public List<Long> findAnimals(Long locationId) {
+        return jdbcTemplate.queryForList(SELECT_BY_LOCATION, Long.class, locationId);
+    }
+
+    @Override
+    public Long save(Long animalId, Long locationId) {
+        return jdbcTemplate.queryForObject(INSERT, Long.class, animalId, locationId, Timestamp.valueOf(LocalDateTime.now()));
     }
 
     @Override

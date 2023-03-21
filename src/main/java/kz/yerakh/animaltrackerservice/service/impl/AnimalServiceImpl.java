@@ -43,7 +43,8 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public AnimalResponse addAnimal(AnimalRequest payload) {
-        checkIfEntriesExist(payload.chipperId(), payload.chippingLocationId());
+        checkIfAccountExist(payload.chipperId());
+        checkIfLocationExist(payload.chippingLocationId());
 
         if (Utils.isDuplicate(payload.animalTypes())) {
             throw new DuplicateItemException();
@@ -64,7 +65,8 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public AnimalResponse updateAnimal(Long animalId, AnimalUpdateRequest payload) {
-        checkIfEntriesExist(payload.chipperId(), payload.chippingLocationId());
+        checkIfAccountExist(payload.chipperId());
+        checkIfLocationExist(payload.chippingLocationId());
         var animal = checkIfAnimalExist(animalId);
 
         if (payload.lifeStatus().equals(LifeStatus.ALIVE)
@@ -153,6 +155,23 @@ public class AnimalServiceImpl implements AnimalService {
         return visitedLocationRepository.findLocations(animalId, payload);
     }
 
+    @Override
+    public VisitedLocation addVisitedLocation(Long animalId, Long pointId) {
+        checkIfLocationExist(pointId);
+        var animal = checkIfAnimalExist(animalId);
+        if (LifeStatus.DEAD.equals(animal.lifeStatus()) ||
+                visitedLocationRepository.findLocations(animalId).isEmpty()
+                        && pointId.equals(animal.chippingLocationId())) {
+            throw new InvalidValueException();
+        }
+        try {
+            var id = visitedLocationRepository.save(animalId, pointId);
+            return visitedLocationRepository.findLocation(id).orElseThrow(EntryNotFoundException::new);
+        } catch (DuplicateKeyException ex) {
+            throw new InvalidValueException();
+        }
+    }
+
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
         return AnimalResponse.builder(animal)
                 .animalTypes(typeOfAnimalRepository.findAnimalTypes(animal.animalId()))
@@ -184,8 +203,14 @@ public class AnimalServiceImpl implements AnimalService {
         }
     }
 
-    private void checkIfEntriesExist(Integer chipperId, Long chippingLocationId) {
-        if (accountRepository.find(chipperId).isEmpty() || locationRepository.find(chippingLocationId).isEmpty()) {
+    private void checkIfAccountExist(Integer accountId) {
+        if (accountRepository.find(accountId).isEmpty()) {
+            throw new EntryNotFoundException();
+        }
+    }
+
+    private void checkIfLocationExist(Long locationId) {
+        if (locationRepository.find(locationId).isEmpty()) {
             throw new EntryNotFoundException();
         }
     }

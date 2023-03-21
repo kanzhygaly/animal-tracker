@@ -100,4 +100,10 @@ public class AnimalController {
                 .build();
         return ResponseEntity.ok(animalService.getVisitedLocations(animalId, criteria));
     }
+
+    @PostMapping(path = "/{animalId}/locations/{pointId}")
+    public ResponseEntity<VisitedLocation> addVisitedLocation(@PathVariable("animalId") @Min(1) Long animalId,
+                                                              @PathVariable("pointId") @Min(1) Long pointId) {
+        return new ResponseEntity<>(animalService.addVisitedLocation(animalId, pointId), HttpStatus.CREATED);
+    }
 }

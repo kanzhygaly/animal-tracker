@@ -24,4 +24,6 @@ public interface AnimalService {
     AnimalResponse deleteTypeFromAnimal(Long animalId, Long typeId);
 
     List<VisitedLocation> getVisitedLocations(Long animalId, VisitedLocationSearchCriteria payload);
+
+    VisitedLocation addVisitedLocation(Long animalId, Long pointId);
 }

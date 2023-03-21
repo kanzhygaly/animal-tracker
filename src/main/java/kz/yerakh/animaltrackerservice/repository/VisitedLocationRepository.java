@@ -4,6 +4,7 @@ import kz.yerakh.animaltrackerservice.dto.VisitedLocationSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VisitedLocationRepository {
 
@@ -11,9 +12,11 @@ public interface VisitedLocationRepository {
 
     List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload);
 
+    Optional<VisitedLocation> findLocation(Long visitedLocationId);
+
     List<Long> findAnimals(Long locationId);
 
-    int save(Long animalId, Long locationId);
+    Long save(Long animalId, Long locationId);
 
     int delete(Long animalId, Long locationId);
 }
