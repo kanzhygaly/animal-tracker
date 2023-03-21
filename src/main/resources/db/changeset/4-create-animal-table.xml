@@ -32,10 +32,10 @@
             <column name="chipping_date_time" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="chipper_id" type="serial">
+            <column name="chipper_id" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="chipping_location_id" type="bigserial">
+            <column name="chipping_location_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="death_date_time" type="timestamp"/>

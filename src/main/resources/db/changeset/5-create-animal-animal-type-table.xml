@@ -11,8 +11,8 @@
         </preConditions>
 
         <createTable tableName="animal_animal_type">
-            <column name="animal_id" type="bigserial"/>
-            <column name="type_id" type="bigserial"/>
+            <column name="animal_id" type="bigint"/>
+            <column name="type_id" type="bigint"/>
         </createTable>
 
         <addPrimaryKey tableName="animal_animal_type" columnNames="animal_id, type_id"

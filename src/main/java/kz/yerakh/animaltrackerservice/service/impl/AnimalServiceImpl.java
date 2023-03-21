@@ -6,6 +6,7 @@ import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.model.Animal;
+import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 import kz.yerakh.animaltrackerservice.repository.*;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
 import kz.yerakh.animaltrackerservice.util.Utils;
@@ -144,6 +145,12 @@ public class AnimalServiceImpl implements AnimalService {
         return animalRepository.find(animalId)
                 .map(this::mapAnimal)
                 .orElseThrow(EntryNotFoundException::new);
+    }
+
+    @Override
+    public List<VisitedLocation> getVisitedLocations(VisitedLocationSearchCriteria payload) {
+        checkIfAnimalExist(payload.animalId());
+        return animalLocationRepository.findLocations(payload);
     }
 
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {

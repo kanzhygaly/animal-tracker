@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import kz.yerakh.animaltrackerservice.dto.*;
 import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
+import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,13 @@ public class AnimalController {
 
     @GetMapping(path = "/search")
     public ResponseEntity<List<AnimalResponse>> getAnimals(@RequestParam(required = false) LocalDateTime startDateTime,
-                                                             @RequestParam(required = false) LocalDateTime endDateTime,
-                                                             @RequestParam(required = false) Integer chipperId,
-                                                             @RequestParam(required = false) Long chippingLocationId,
-                                                             @RequestParam(required = false) LifeStatus lifeStatus,
-                                                             @RequestParam(required = false) Gender gender,
-                                                             @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+                                                           @RequestParam(required = false) LocalDateTime endDateTime,
+                                                           @RequestParam(required = false) Integer chipperId,
+                                                           @RequestParam(required = false) Long chippingLocationId,
+                                                           @RequestParam(required = false) LifeStatus lifeStatus,
+                                                           @RequestParam(required = false) Gender gender,
+                                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         if (chipperId < 1 || chippingLocationId < 1) {
             throw new InvalidValueException();
         }
@@ -75,13 +76,29 @@ public class AnimalController {
 
     @PutMapping(path = "/{animalId}/types")
     public ResponseEntity<AnimalResponse> updateTypeOfAnimal(@PathVariable("animalId") @Min(1) Long animalId,
-                                                          @RequestBody @Valid UpdateTypeOfAnimalRequest request) {
+                                                             @RequestBody @Valid UpdateTypeOfAnimalRequest request) {
         return ResponseEntity.ok(animalService.updateTypeOfAnimal(animalId, request));
     }
 
     @DeleteMapping(path = "/{animalId}/types/{typeId}")
     public ResponseEntity<AnimalResponse> deleteTypeFromAnimal(@PathVariable("animalId") @Min(1) Long animalId,
-                                                          @PathVariable("typeId") @Min(1) Long typeId) {
+                                                               @PathVariable("typeId") @Min(1) Long typeId) {
         return ResponseEntity.ok(animalService.deleteTypeFromAnimal(animalId, typeId));
+    }
+
+    @GetMapping(path = "/{animalId}/locations")
+    public ResponseEntity<List<VisitedLocation>> getVisitedLocations(@PathVariable("animalId") @Min(1) Long animalId,
+                                                                     @RequestParam(required = false) LocalDateTime startDateTime,
+                                                                     @RequestParam(required = false) LocalDateTime endDateTime,
+                                                                     @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                                     @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        var criteria = VisitedLocationSearchCriteria.builder()
+                .animalId(animalId)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
+                .from(from)
+                .size(size)
+                .build();
+        return ResponseEntity.ok(animalService.getVisitedLocations(criteria));
     }
 }

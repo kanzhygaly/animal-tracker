@@ -1,6 +1,7 @@
 package kz.yerakh.animaltrackerservice.service;
 
 import kz.yerakh.animaltrackerservice.dto.*;
+import kz.yerakh.animaltrackerservice.model.VisitedLocation;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface AnimalService {
     AnimalResponse updateTypeOfAnimal(Long animalId, UpdateTypeOfAnimalRequest payload);
 
     AnimalResponse deleteTypeFromAnimal(Long animalId, Long typeId);
+
+    List<VisitedLocation> getVisitedLocations(VisitedLocationSearchCriteria payload);
 }

@@ -11,12 +11,21 @@
         </preConditions>
 
         <createTable tableName="animal_location">
-            <column name="animal_id" type="bigserial"/>
-            <column name="location_id" type="bigserial"/>
+            <column name="visited_location_id" type="bigserial">
+                <constraints primaryKey="true" primaryKeyName="visited_location_id_pk"/>
+            </column>
+            <column name="animal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visited_date_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
-        <addPrimaryKey tableName="animal_location" columnNames="animal_id, location_id"
-                       constraintName="animal_location_pk"/>
+        <addUniqueConstraint tableName="animal_location" columnNames="animal_id, location_id"/>
 
         <rollback>
             <dropTable tableName="animal_location"/>
