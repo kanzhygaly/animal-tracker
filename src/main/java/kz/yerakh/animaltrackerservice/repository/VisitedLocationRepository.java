@@ -9,7 +9,7 @@ public interface VisitedLocationRepository {
 
     List<Long> findLocations(Long animalId);
 
-    List<VisitedLocation> findLocations(VisitedLocationSearchCriteria payload);
+    List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload);
 
     List<Long> findAnimals(Long locationId);
 

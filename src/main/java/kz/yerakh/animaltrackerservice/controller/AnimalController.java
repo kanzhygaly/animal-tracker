@@ -93,12 +93,11 @@ public class AnimalController {
                                                                      @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                                      @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         var criteria = VisitedLocationSearchCriteria.builder()
-                .animalId(animalId)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .from(from)
                 .size(size)
                 .build();
-        return ResponseEntity.ok(animalService.getVisitedLocations(criteria));
+        return ResponseEntity.ok(animalService.getVisitedLocations(animalId, criteria));
     }
 }

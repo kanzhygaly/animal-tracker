@@ -38,9 +38,9 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     }
 
     @Override
-    public List<VisitedLocation> findLocations(VisitedLocationSearchCriteria payload) {
+    public List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload) {
         ArrayList<Object> params = new ArrayList<>();
-        params.add(payload.animalId());
+        params.add(animalId);
 
         var where = new StringBuilder();
         if (payload.startDateTime() != null) {

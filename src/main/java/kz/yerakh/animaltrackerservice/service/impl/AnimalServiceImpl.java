@@ -148,9 +148,9 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public List<VisitedLocation> getVisitedLocations(VisitedLocationSearchCriteria payload) {
-        checkIfAnimalExist(payload.animalId());
-        return visitedLocationRepository.findLocations(payload);
+    public List<VisitedLocation> getVisitedLocations(Long animalId, VisitedLocationSearchCriteria payload) {
+        checkIfAnimalExist(animalId);
+        return visitedLocationRepository.findLocations(animalId, payload);
     }
 
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
