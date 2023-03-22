@@ -28,4 +28,6 @@ public interface AnimalService {
     VisitedLocation addVisitedLocation(Long animalId, Long pointId);
 
     VisitedLocation updateVisitedLocation(Long animalId, UpdateVisitedLocationRequest payload);
+
+    void deleteVisitedLocation(Long animalId, Long visitedPointId);
 }

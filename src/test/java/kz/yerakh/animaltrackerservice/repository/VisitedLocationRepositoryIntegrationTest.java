@@ -18,7 +18,7 @@ class VisitedLocationRepositoryIntegrationTest {
     private VisitedLocationRepository testObj;
 
     @Test
-    void save_find_update_success() {
+    void save_find_update_delete_success() {
         long animalId = 2;
         long locationId = 3;
         var id = testObj.save(animalId, locationId);
@@ -30,28 +30,24 @@ class VisitedLocationRepositoryIntegrationTest {
 
         assertThat(testObj.findAnimals(locationId)).hasSize(1);
 
-        assertThat(testObj.update(id, 4L)).isEqualTo(1);
+        long newLocationId = 4;
+        assertThat(testObj.update(id, newLocationId)).isEqualTo(1);
 
         assertThat(testObj.findAnimals(locationId)).isEmpty();
-    }
 
-    @Test
-    @Sql(value = "/db/populate_visited_location.sql")
-    void delete_success() {
-        long animalId = 1;
-        long locationId = 1;
-        assertThat(testObj.delete(animalId, locationId)).isPositive();
-        assertThat(testObj.findLocations(animalId)).doesNotContain(locationId);
+        assertThat(testObj.delete(id, animalId)).isEqualTo(1);
+
+        assertThat(testObj.findAnimals(newLocationId)).isEmpty();
     }
 
     @Test
     @Sql(value = "/db/populate_visited_location.sql")
     void findLocations_byStartDateTimeAndEndDateTime_returnsTwoValues() {
         long animalId = 1;
-        int size = testObj.findLocations(animalId, VisitedLocationSearchCriteria.builder().from(0).size(10).build()).size();
+        int size = testObj.find(animalId, VisitedLocationSearchCriteria.builder().from(0).size(10).build()).size();
 
         var criteria = VisitedLocationSearchCriteria.builder().startDateTime(LocalDateTime.MIN)
                 .endDateTime(LocalDateTime.MAX).from(0).size(10).build();
-        assertThat(testObj.findLocations(animalId, criteria)).hasSize(size);
+        assertThat(testObj.find(animalId, criteria)).hasSize(size);
     }
 }

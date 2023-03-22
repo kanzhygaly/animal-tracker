@@ -112,4 +112,11 @@ public class AnimalController {
                                                                  @RequestBody @Valid UpdateVisitedLocationRequest request) {
         return ResponseEntity.ok(animalService.updateVisitedLocation(animalId, request));
     }
+
+    @DeleteMapping(path = "/{animalId}/locations/{visitedPointId}")
+    public ResponseEntity<String> deleteVisitedLocation(@PathVariable("animalId") @Min(1) Long animalId,
+                                                        @PathVariable("visitedPointId") @Min(1) Long visitedPointId) {
+        animalService.deleteVisitedLocation(animalId, visitedPointId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

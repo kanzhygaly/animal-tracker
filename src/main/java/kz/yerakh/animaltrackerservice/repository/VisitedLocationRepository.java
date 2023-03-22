@@ -10,7 +10,7 @@ public interface VisitedLocationRepository {
 
     List<Long> findLocations(Long animalId);
 
-    List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload);
+    List<VisitedLocation> find(Long animalId, VisitedLocationSearchCriteria payload);
 
     Optional<VisitedLocation> find(Long visitedLocationId);
 
@@ -20,5 +20,5 @@ public interface VisitedLocationRepository {
 
     int update(Long visitedLocationId, Long locationId);
 
-    int delete(Long animalId, Long locationId);
+    int delete(Long visitedLocationId, Long animalId);
 }

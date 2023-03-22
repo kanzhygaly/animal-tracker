@@ -26,7 +26,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     private static final String SELECT_BY_LOCATION = "SELECT animal_id FROM visited_location WHERE location_id = ?";
     private static final String INSERT = "INSERT INTO visited_location(animal_id, location_id, visited_date_time) " +
             "VALUES(?, ?, ?) RETURNING visited_location_id";
-    private static final String DELETE = "DELETE FROM visited_location WHERE animal_id = ? AND location_id = ?";
+    private static final String DELETE = "DELETE FROM visited_location WHERE visited_location_id = ? AND animal_id = ?";
     private static final String UPDATE = "UPDATE visited_location SET location_id = ? WHERE visited_location_id = ?";
 
     private static final String SELECT = "SELECT * FROM visited_location WHERE animal_id = ?";
@@ -42,7 +42,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     }
 
     @Override
-    public List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload) {
+    public List<VisitedLocation> find(Long animalId, VisitedLocationSearchCriteria payload) {
         ArrayList<Object> params = new ArrayList<>();
         params.add(animalId);
 
@@ -95,7 +95,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     }
 
     @Override
-    public int delete(Long animalId, Long locationId) {
-        return jdbcTemplate.update(DELETE, animalId, locationId);
+    public int delete(Long visitedLocationId, Long animalId) {
+        return jdbcTemplate.update(DELETE, visitedLocationId, animalId);
     }
 }
