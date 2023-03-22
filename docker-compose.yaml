@@ -29,6 +29,19 @@ services:
     networks:
       - spring-postgres
 
+  tests:
+    image: mrexpen/planet_olymp_phase1
+    pull_policy: always
+    ports:
+      - "8090:8080"
+    depends_on:
+      - animal-tracker-service
+    environment:
+      SERVER_URL: http://webapi:8080
+      STAGE: all
+    networks:
+      - spring-postgres
+
 volumes:
   db-data:
 networks:
