@@ -26,4 +26,6 @@ public interface AnimalService {
     List<VisitedLocation> getVisitedLocations(Long animalId, VisitedLocationSearchCriteria payload);
 
     VisitedLocation addVisitedLocation(Long animalId, Long pointId);
+
+    VisitedLocation updateVisitedLocation(Long animalId, UpdateVisitedLocationRequest payload);
 }

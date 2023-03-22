@@ -12,11 +12,13 @@ public interface VisitedLocationRepository {
 
     List<VisitedLocation> findLocations(Long animalId, VisitedLocationSearchCriteria payload);
 
-    Optional<VisitedLocation> findLocation(Long visitedLocationId);
+    Optional<VisitedLocation> find(Long visitedLocationId);
 
     List<Long> findAnimals(Long locationId);
 
     Long save(Long animalId, Long locationId);
+
+    int update(Long visitedLocationId, Long locationId);
 
     int delete(Long animalId, Long locationId);
 }

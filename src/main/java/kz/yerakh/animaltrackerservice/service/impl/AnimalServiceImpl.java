@@ -159,17 +159,46 @@ public class AnimalServiceImpl implements AnimalService {
     public VisitedLocation addVisitedLocation(Long animalId, Long pointId) {
         checkIfLocationExist(pointId);
         var animal = checkIfAnimalExist(animalId);
+        var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (LifeStatus.DEAD.equals(animal.lifeStatus()) ||
-                visitedLocationRepository.findLocations(animalId).isEmpty()
-                        && pointId.equals(animal.chippingLocationId())) {
+                visitedLocations.isEmpty() && pointId.equals(animal.chippingLocationId())) {
             throw new InvalidValueException();
         }
-        try {
-            var id = visitedLocationRepository.save(animalId, pointId);
-            return visitedLocationRepository.findLocation(id).orElseThrow(EntryNotFoundException::new);
-        } catch (DuplicateKeyException ex) {
+        if (visitedLocations.get(visitedLocations.size() - 1).equals(pointId)) {
             throw new InvalidValueException();
         }
+        var id = visitedLocationRepository.save(animalId, pointId);
+        return checkIfVisitedLocationExist(id);
+    }
+
+    @Override
+    public VisitedLocation updateVisitedLocation(Long animalId, UpdateVisitedLocationRequest payload) {
+        checkIfLocationExist(payload.locationPointId());
+        var animal = checkIfAnimalExist(animalId);
+        var visitedLocation = checkIfVisitedLocationExist(payload.visitedLocationPointId());
+        if (!visitedLocation.animalId().equals(animalId)) {
+            throw new EntryNotFoundException();
+        }
+
+        if (visitedLocation.locationPointId().equals(payload.locationPointId())) {
+            throw new InvalidValueException();
+        }
+        var visitedLocations = visitedLocationRepository.findLocations(animalId);
+        if (visitedLocations.size() == 1 && animal.chippingLocationId().equals(payload.locationPointId())) {
+            throw new InvalidValueException();
+        }
+        int index = visitedLocations.indexOf(visitedLocation.locationPointId());
+        int prev = index - 1;
+        if (prev > -1 && visitedLocations.get(prev).equals(payload.locationPointId())) {
+            throw new InvalidValueException();
+        }
+        int next = index + 1;
+        if (next < visitedLocations.size() && visitedLocations.get(next).equals(payload.locationPointId())) {
+            throw new InvalidValueException();
+        }
+
+        visitedLocationRepository.update(payload.visitedLocationPointId(), payload.locationPointId());
+        return checkIfVisitedLocationExist(payload.visitedLocationPointId());
     }
 
     private AnimalResponse mapAnimal(Animal animal, List<Long> visitedLocations) {
@@ -213,5 +242,9 @@ public class AnimalServiceImpl implements AnimalService {
         if (locationRepository.find(locationId).isEmpty()) {
             throw new EntryNotFoundException();
         }
+    }
+
+    private VisitedLocation checkIfVisitedLocationExist(Long visitedLocationPointId) {
+        return visitedLocationRepository.find(visitedLocationPointId).orElseThrow(EntryNotFoundException::new);
     }
 }

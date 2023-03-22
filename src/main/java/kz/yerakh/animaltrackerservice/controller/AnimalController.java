@@ -106,4 +106,10 @@ public class AnimalController {
                                                               @PathVariable("pointId") @Min(1) Long pointId) {
         return new ResponseEntity<>(animalService.addVisitedLocation(animalId, pointId), HttpStatus.CREATED);
     }
+
+    @PutMapping(path = "/{animalId}/locations")
+    public ResponseEntity<VisitedLocation> updateVisitedLocation(@PathVariable("animalId") @Min(1) Long animalId,
+                                                                 @RequestBody @Valid UpdateVisitedLocationRequest request) {
+        return ResponseEntity.ok(animalService.updateVisitedLocation(animalId, request));
+    }
 }

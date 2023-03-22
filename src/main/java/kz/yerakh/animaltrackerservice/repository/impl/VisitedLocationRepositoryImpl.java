@@ -20,17 +20,16 @@ import static kz.yerakh.animaltrackerservice.util.Utils.AND;
 @RequiredArgsConstructor
 public class VisitedLocationRepositoryImpl implements VisitedLocationRepository {
 
-    private static final String SELECT_SINGLE = "SELECT visited_location_id, visited_date_time, location_id " +
-            "FROM visited_location WHERE visited_location_id = ?";
+    private static final String SELECT_SINGLE = "SELECT * FROM visited_location WHERE visited_location_id = ?";
     private static final String SELECT_BY_ANIMAL = "SELECT location_id FROM visited_location WHERE animal_id = ? " +
             "ORDER BY visited_date_time";
     private static final String SELECT_BY_LOCATION = "SELECT animal_id FROM visited_location WHERE location_id = ?";
     private static final String INSERT = "INSERT INTO visited_location(animal_id, location_id, visited_date_time) " +
             "VALUES(?, ?, ?) RETURNING visited_location_id";
     private static final String DELETE = "DELETE FROM visited_location WHERE animal_id = ? AND location_id = ?";
+    private static final String UPDATE = "UPDATE visited_location SET location_id = ? WHERE visited_location_id = ?";
 
-    private static final String SELECT = "SELECT visited_location_id, visited_date_time, location_id " +
-            "FROM visited_location WHERE animal_id = ?";
+    private static final String SELECT = "SELECT * FROM visited_location WHERE animal_id = ?";
     private static final String VISIT_DATE_GREATER_THAN = " visited_date_time > ?";
     private static final String VISIT_DATE_LOWER_THAN = " visited_date_time < ?";
     private static final String LIMIT_AND_OFFSET = " ORDER BY visited_date_time LIMIT ? OFFSET ?";
@@ -71,7 +70,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     }
 
     @Override
-    public Optional<VisitedLocation> findLocation(Long visitedLocationId) {
+    public Optional<VisitedLocation> find(Long visitedLocationId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_SINGLE,
                     new VisitedLocation.VisitedLocationRowMapper(), visitedLocationId));
@@ -88,6 +87,11 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     @Override
     public Long save(Long animalId, Long locationId) {
         return jdbcTemplate.queryForObject(INSERT, Long.class, animalId, locationId, Timestamp.valueOf(LocalDateTime.now()));
+    }
+
+    @Override
+    public int update(Long visitedLocationId, Long locationId) {
+        return jdbcTemplate.update(UPDATE, locationId, visitedLocationId);
     }
 
     @Override
