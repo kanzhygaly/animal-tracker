@@ -9,11 +9,13 @@ import kz.yerakh.animaltrackerservice.repository.AnimalTypeRepository;
 import kz.yerakh.animaltrackerservice.repository.TypeOfAnimalRepository;
 import kz.yerakh.animaltrackerservice.service.AnimalTypeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnimalTypeServiceImpl implements AnimalTypeService {
 
     private final AnimalTypeRepository animalTypeRepository;
@@ -30,7 +32,9 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
             Long id = animalTypeRepository.save(payload.type());
             return animalTypeRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "AnimalType with the following name " + payload.type() + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
     }
 
@@ -40,7 +44,9 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
         try {
             animalTypeRepository.update(typeId, payload.type());
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "AnimalType with the following name " + payload.type() + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
         return new AnimalType(typeId, payload.type());
     }
@@ -60,7 +66,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
     private void checkIfTypeConnectedToAnimal(Long typeId) {
         if (!typeOfAnimalRepository.findAnimals(typeId).isEmpty()) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Account is connected to an animal");
         }
     }
 }

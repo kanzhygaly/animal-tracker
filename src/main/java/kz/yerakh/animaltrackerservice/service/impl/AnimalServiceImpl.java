@@ -11,6 +11,7 @@ import kz.yerakh.animaltrackerservice.repository.*;
 import kz.yerakh.animaltrackerservice.service.AnimalService;
 import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnimalServiceImpl implements AnimalService {
 
     private final AnimalRepository animalRepository;
@@ -47,7 +49,7 @@ public class AnimalServiceImpl implements AnimalService {
         checkIfLocationExist(payload.chippingLocationId());
 
         if (Utils.isDuplicate(payload.animalTypes())) {
-            throw new DuplicateItemException();
+            throw new DuplicateItemException("Duplicate Animal Type IDs");
         }
 
         validateAnimalTypes(payload.animalTypes());
@@ -71,12 +73,12 @@ public class AnimalServiceImpl implements AnimalService {
 
         if (payload.lifeStatus().equals(LifeStatus.ALIVE)
                 && LifeStatus.DEAD.equals(animal.lifeStatus())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Animal with status DEAD can't be changed to ALIVE");
         }
 
         var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (!visitedLocations.isEmpty() && visitedLocations.get(0).equals(payload.chippingLocationId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("First visited location is equal to the chipping location");
         }
 
         animalRepository.update(animalId, payload);
@@ -91,7 +93,7 @@ public class AnimalServiceImpl implements AnimalService {
         var animal = checkIfAnimalExist(animalId);
         var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (!visitedLocations.isEmpty() && !visitedLocations.contains(animal.chippingLocationId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Visited locations doesn't contain chipping location");
         }
         animalRepository.delete(animalId);
     }
@@ -103,7 +105,9 @@ public class AnimalServiceImpl implements AnimalService {
         try {
             typeOfAnimalRepository.save(animalId, typeId);
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "Animal " + animalId + " with the following type " + typeId + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
         return animalRepository.find(animalId)
                 .map(this::mapAnimal)
@@ -122,7 +126,9 @@ public class AnimalServiceImpl implements AnimalService {
         try {
             typeOfAnimalRepository.save(animalId, payload.newTypeId());
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "Animal " + animalId + " with the following type " + payload.newTypeId() + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
         typeOfAnimalRepository.delete(animalId, payload.oldTypeId());
 
@@ -141,7 +147,7 @@ public class AnimalServiceImpl implements AnimalService {
             throw new EntryNotFoundException();
         }
         if (animalTypes.size() == 1 && animalTypes.get(0).equals(typeId)) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Animal has one type and it equals to the one being deleted");
         }
 
         return animalRepository.find(animalId)
@@ -160,12 +166,14 @@ public class AnimalServiceImpl implements AnimalService {
         checkIfLocationExist(pointId);
         var animal = checkIfAnimalExist(animalId);
         var visitedLocations = visitedLocationRepository.findLocations(animalId);
-        if (LifeStatus.DEAD.equals(animal.lifeStatus()) ||
-                visitedLocations.isEmpty() && pointId.equals(animal.chippingLocationId())) {
-            throw new InvalidValueException();
+        if (LifeStatus.DEAD.equals(animal.lifeStatus())) {
+            throw new InvalidValueException("Can't add visited location to the DEAD animal");
+        }
+        if (visitedLocations.isEmpty() && pointId.equals(animal.chippingLocationId())) {
+            throw new InvalidValueException("First visited location can't be equal to chipping location");
         }
         if (visitedLocations.get(visitedLocations.size() - 1).equals(pointId)) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("New visited location can't be equal to the previous one");
         }
         var id = visitedLocationRepository.save(animalId, pointId);
         return checkIfVisitedLocationExist(id);
@@ -179,20 +187,20 @@ public class AnimalServiceImpl implements AnimalService {
         validateVisitedLocationAnimal(visitedLocation, animalId);
 
         if (visitedLocation.locationPointId().equals(payload.locationPointId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Can't update visited location to the same one");
         }
         var visitedLocations = visitedLocationRepository.findLocations(animalId);
         if (visitedLocations.size() == 1 && animal.chippingLocationId().equals(payload.locationPointId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Can't update visited location to the chipping location");
         }
         int index = visitedLocations.indexOf(visitedLocation.locationPointId());
         int prev = index - 1;
         if (prev > -1 && visitedLocations.get(prev).equals(payload.locationPointId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("New visited location is equal to the previous one");
         }
         int next = index + 1;
         if (next < visitedLocations.size() && visitedLocations.get(next).equals(payload.locationPointId())) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("New visited location is equal to the next one");
         }
 
         visitedLocationRepository.update(payload.visitedLocationPointId(), payload.locationPointId());

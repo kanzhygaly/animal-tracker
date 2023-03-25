@@ -38,7 +38,7 @@ services:
       - animal-tracker-service
     environment:
       SERVER_URL: http://animal-tracker-service:8080/animal-tracker-api
-      STAGE: all
+      STAGE: 2
     networks:
       - spring-postgres
 

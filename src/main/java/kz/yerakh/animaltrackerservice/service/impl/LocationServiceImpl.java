@@ -5,15 +5,17 @@ import kz.yerakh.animaltrackerservice.exception.EntryAlreadyExistException;
 import kz.yerakh.animaltrackerservice.exception.EntryNotFoundException;
 import kz.yerakh.animaltrackerservice.exception.InvalidValueException;
 import kz.yerakh.animaltrackerservice.model.Location;
-import kz.yerakh.animaltrackerservice.repository.VisitedLocationRepository;
 import kz.yerakh.animaltrackerservice.repository.LocationRepository;
+import kz.yerakh.animaltrackerservice.repository.VisitedLocationRepository;
 import kz.yerakh.animaltrackerservice.service.LocationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LocationServiceImpl implements LocationService {
 
     private final LocationRepository locationRepository;
@@ -30,7 +32,10 @@ public class LocationServiceImpl implements LocationService {
             Long id = locationRepository.save(payload);
             return locationRepository.find(id).orElseThrow(EntryNotFoundException::new);
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "Location with the following latitude " + payload.latitude() + " and longitude "
+                    + payload.longitude() + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
     }
 
@@ -40,7 +45,10 @@ public class LocationServiceImpl implements LocationService {
         try {
             locationRepository.update(locationId, payload);
         } catch (DuplicateKeyException ex) {
-            throw new EntryAlreadyExistException();
+            String msg = "Location with the following latitude " + payload.latitude() + " and longitude "
+                    + payload.longitude() + " already exist";
+            log.warn(msg);
+            throw new EntryAlreadyExistException(msg);
         }
         return Location.builder()
                 .id(locationId)
@@ -64,7 +72,7 @@ public class LocationServiceImpl implements LocationService {
 
     private void checkIfLocationConnectedToAnimal(Long locationId) {
         if (!visitedLocationRepository.findAnimals(locationId).isEmpty()) {
-            throw new InvalidValueException();
+            throw new InvalidValueException("Location is connected to an animal");
         }
     }
 }

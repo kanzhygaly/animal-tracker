@@ -20,7 +20,7 @@ class AccountRepositoryIntegrationTest {
     @Test
     void save_find_and_update_success() {
         var email = "victor.hugo@gmail.com";
-        var id = testObj.save(new AccountRequest("Victor", "Hugo", email, "DummyPassword"));
+        var id = testObj.save("Victor", "Hugo", email, "DummyPassword");
 
         var account = testObj.find(id);
         assertThat(account).isPresent();
@@ -39,15 +39,24 @@ class AccountRepositoryIntegrationTest {
     @Test
     @Sql(value = "/db/populate_account.sql")
     void save_violatesUniqueEmail_throwsException() {
-        var item = new AccountRequest("John", "Smith", "john.smith@gmail.com", "DummyPassword");
-        assertThrows(DuplicateKeyException.class, () -> testObj.save(item));
+        assertThrows(DuplicateKeyException.class,
+                () -> testObj.save("John", "Smith", "john.smith@gmail.com", "DummyPassword"));
     }
 
     @Test
     @Sql(value = "/db/populate_account.sql")
     void update_violatesUniqueEmail_throwsException() {
+        var email = "jack.wolf@gmail.com";
+        var password = "mostSecurePassword";
+        var id = testObj.save("Jack", "Wolfskin", email, password);
+
+        var userData = testObj.find(email);
+        assertThat(userData).isPresent();
+        assertThat(userData.get().username()).isEqualTo(email);
+        assertThat(userData.get().password()).isEqualTo(password);
+
         var item = new AccountRequest("John", "Smith", "john.smith@gmail.com", "DummyPassword");
-        assertThrows(DuplicateKeyException.class, () -> testObj.update(2, item));
+        assertThrows(DuplicateKeyException.class, () -> testObj.update(id, item));
     }
 
     @Test

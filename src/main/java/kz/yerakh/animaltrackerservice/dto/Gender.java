@@ -15,7 +15,7 @@ public enum Gender {
         try {
             return Gender.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            throw new InvalidValueException();
+            throw new InvalidValueException(ex.getMessage());
         }
     }
 }

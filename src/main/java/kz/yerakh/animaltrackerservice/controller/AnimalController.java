@@ -9,6 +9,7 @@ import kz.yerakh.animaltrackerservice.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/animals")
+@Validated
 public class AnimalController {
 
     private final AnimalService animalService;
@@ -35,8 +37,11 @@ public class AnimalController {
                                                            @RequestParam(required = false) Gender gender,
                                                            @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        if (chipperId < 1 || chippingLocationId < 1) {
-            throw new InvalidValueException();
+        if (chipperId < 1) {
+            throw new InvalidValueException("chipperId can't be less than 1");
+        }
+        if (chippingLocationId < 1) {
+            throw new InvalidValueException("chippingLocationId can't be less than 1");
         }
         var criteria = AnimalSearchCriteria.builder()
                 .startDateTime(startDateTime)

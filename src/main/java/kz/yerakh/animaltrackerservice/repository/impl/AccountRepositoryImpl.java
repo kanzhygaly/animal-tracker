@@ -3,6 +3,7 @@ package kz.yerakh.animaltrackerservice.repository.impl;
 import kz.yerakh.animaltrackerservice.dto.AccountRequest;
 import kz.yerakh.animaltrackerservice.dto.AccountSearchCriteria;
 import kz.yerakh.animaltrackerservice.model.Account;
+import kz.yerakh.animaltrackerservice.model.UserData;
 import kz.yerakh.animaltrackerservice.repository.AccountRepository;
 import kz.yerakh.animaltrackerservice.util.Utils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class AccountRepositoryImpl implements AccountRepository {
 
     private static final String SELECT_BY_ID = "SELECT account_id, first_name, last_name, email FROM account WHERE account_id = ?";
+    private static final String SELECT_BY_EMAIL = "SELECT account_id, email, password FROM account WHERE email = ?";
     private static final String SELECT = "SELECT account_id, first_name, last_name, email FROM account";
     private static final String WHERE = " WHERE";
     private static final String LIKE_FIRST_NAME = " LOWER(first_name) LIKE LOWER(?)";
@@ -73,9 +75,18 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Integer save(AccountRequest payload) {
-        return jdbcTemplate.queryForObject(INSERT, Integer.class, payload.firstName(), payload.lastName(),
-                payload.email(), payload.password());
+    public Optional<UserData> find(String username) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_EMAIL, new UserData.UserDataRowMapper(), username));
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Integer save(String firstName, String lastName, String email, String password) {
+        return jdbcTemplate.queryForObject(INSERT, Integer.class, firstName, lastName,
+                email, password);
     }
 
     @Override

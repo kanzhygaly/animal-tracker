@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
+    public static final String PATH_REGISTRATION = "/registration";
+
     private final AccountService accountService;
 
-    @PostMapping(path = "/registration")
+    @PostMapping(path = PATH_REGISTRATION)
     public ResponseEntity<AccountResponse> registration(@RequestBody @Valid AccountRequest accountRequest) {
         var response = accountService.addAccount(accountRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
