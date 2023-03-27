@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountResponse addAccount(AccountRequest payload);
+    AccountResponse registerAccount(AccountRequest payload);
 
     AccountResponse getAccount(Integer accountId);
 

@@ -72,8 +72,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ModifyAccountException.class)
-    public ResponseEntity<Object> handleForbidden(ModifyAccountException ex, WebRequest request) {
+    @ExceptionHandler(UnauthorisedException.class)
+    public ResponseEntity<Object> handleForbidden(UnauthorisedException ex, WebRequest request) {
         var body = new HashMap<>();
         body.put(KEY_ERRORS, Collections.singletonList(ex.getMessage()));
 

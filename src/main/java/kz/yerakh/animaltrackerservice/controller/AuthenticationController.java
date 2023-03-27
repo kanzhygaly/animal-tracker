@@ -21,7 +21,7 @@ public class AuthenticationController {
 
     @PostMapping(path = PATH_REGISTRATION)
     public ResponseEntity<AccountResponse> registration(@RequestBody @Valid AccountRequest accountRequest) {
-        var response = accountService.addAccount(accountRequest);
+        var response = accountService.registerAccount(accountRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

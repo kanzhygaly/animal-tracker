@@ -39,8 +39,8 @@
         <appender-ref ref="CONSOLE" />
     </root>
 
-    <!-- LOG "kz.yerakh*" at DEBUG level -->
-    <logger name="kz.yerakh" level="debug" additivity="false">
+    <!-- LOG "kz.yerakh*" at INFO level -->
+    <logger name="kz.yerakh" level="info" additivity="false">
         <appender-ref ref="ASYNC" />
         <appender-ref ref="CONSOLE" />
     </logger>
