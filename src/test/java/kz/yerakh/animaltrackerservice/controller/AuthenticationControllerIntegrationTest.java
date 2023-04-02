@@ -37,7 +37,7 @@ class AuthenticationControllerIntegrationTest {
         assertThat(responseBody.lastName()).isEqualTo(LAST_NAME);
         assertThat(responseBody.email()).isEqualTo(EMAIL);
 
-        var duplicate = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), AccountResponse.class);
+        var duplicate = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), String.class);
         assertThat(duplicate.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
@@ -45,7 +45,7 @@ class AuthenticationControllerIntegrationTest {
     void registration_invalidEmail_returnsBadRequest() {
         var request = new AccountRequest(FIRST_NAME, LAST_NAME, "jack.single", PASSWORD);
 
-        var response = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), AccountResponse.class);
+        var response = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -53,7 +53,7 @@ class AuthenticationControllerIntegrationTest {
     void registration_emptyFirstName_returnsBadRequest() {
         var request = new AccountRequest("", LAST_NAME, EMAIL, PASSWORD);
 
-        var response = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), AccountResponse.class);
+        var response = restTemplate.exchange(PATH_REGISTRATION, HttpMethod.POST, new HttpEntity<>(request), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

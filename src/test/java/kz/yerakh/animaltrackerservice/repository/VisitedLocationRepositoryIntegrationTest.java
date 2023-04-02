@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,8 +47,10 @@ class VisitedLocationRepositoryIntegrationTest {
         long animalId = 1;
         int size = testObj.find(animalId, VisitedLocationSearchCriteria.builder().from(0).size(10).build()).size();
 
-        var criteria = VisitedLocationSearchCriteria.builder().startDateTime(LocalDateTime.MIN)
-                .endDateTime(LocalDateTime.MAX).from(0).size(10).build();
+        var criteria = VisitedLocationSearchCriteria.builder()
+                .startDateTime(Instant.now().minus(365, ChronoUnit.DAYS))
+                .endDateTime(Instant.now().plus(365, ChronoUnit.DAYS))
+                .from(0).size(10).build();
         assertThat(testObj.find(animalId, criteria)).hasSize(size);
     }
 }

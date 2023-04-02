@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,7 +61,9 @@ class AnimalRepositoryIntegrationTest {
     void find_byStartDateTimeAndEndDateTime_returnsAll() {
         int size = testObj.find(AnimalSearchCriteria.builder().from(0).size(10).build()).size();
 
-        var criteria = AnimalSearchCriteria.builder().startDateTime(LocalDateTime.MIN).endDateTime(LocalDateTime.MAX)
+        var criteria = AnimalSearchCriteria.builder()
+                .startDateTime(Instant.now().minus(365, ChronoUnit.DAYS))
+                .endDateTime(Instant.now().plus(365, ChronoUnit.DAYS))
                 .from(0).size(10).build();
         assertThat(testObj.find(criteria)).hasSize(size);
     }
@@ -68,8 +71,9 @@ class AnimalRepositoryIntegrationTest {
     @Test
     @Sql(value = "/db/populate_animal.sql")
     void find_byStartDateTimeAndChipperId_returnsTwoEntries() {
-        var criteria = AnimalSearchCriteria.builder().startDateTime(LocalDateTime.MIN).chipperId(102)
-                .from(0).size(10).build();
+        var criteria = AnimalSearchCriteria.builder()
+                .startDateTime(Instant.now().minus(365, ChronoUnit.DAYS))
+                .chipperId(102).from(0).size(10).build();
         assertThat(testObj.find(criteria)).hasSize(2);
     }
 

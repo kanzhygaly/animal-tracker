@@ -9,7 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
     private static final String LIMIT_AND_OFFSET = " ORDER BY visited_date_time LIMIT ? OFFSET ?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
     @Override
     public List<Long> findLocations(Long animalId) {
@@ -50,12 +52,12 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
         if (payload.startDateTime() != null) {
             where.append(AND);
             where.append(VISIT_DATE_GREATER_THAN);
-            params.add(payload.startDateTime());
+            params.add(Timestamp.from(payload.startDateTime()));
         }
         if (payload.endDateTime() != null) {
             where.append(AND);
             where.append(VISIT_DATE_LOWER_THAN);
-            params.add(payload.endDateTime());
+            params.add(Timestamp.from(payload.endDateTime()));
         }
 
         var query = new StringBuilder(SELECT);
@@ -86,7 +88,8 @@ public class VisitedLocationRepositoryImpl implements VisitedLocationRepository 
 
     @Override
     public Long save(Long animalId, Long locationId) {
-        return jdbcTemplate.queryForObject(INSERT, Long.class, animalId, locationId, Timestamp.valueOf(LocalDateTime.now()));
+        var now = Timestamp.from(Instant.now(clock));
+        return jdbcTemplate.queryForObject(INSERT, Long.class, animalId, locationId, now);
     }
 
     @Override

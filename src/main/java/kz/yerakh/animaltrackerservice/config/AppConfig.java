@@ -7,9 +7,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.time.Clock;
 
 @Configuration
 public class AppConfig {
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
 
     @Bean
     public DataSource dataSource(DatasourceProperties datasourceProperties) {

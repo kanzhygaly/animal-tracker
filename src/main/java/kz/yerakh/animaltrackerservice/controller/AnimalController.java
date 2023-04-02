@@ -12,14 +12,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/animals")
+@RequestMapping(path = AnimalController.PATH_ANIMALS)
 @Validated
 public class AnimalController {
+
+    public static final String PATH_ANIMALS = "/animals";
+    public static final String PATH_SEARCH = "/search";
 
     private final AnimalService animalService;
 
@@ -28,19 +31,19 @@ public class AnimalController {
         return ResponseEntity.ok(animalService.getAnimal(animalId));
     }
 
-    @GetMapping(path = "/search")
-    public ResponseEntity<List<AnimalResponse>> getAnimals(@RequestParam(required = false) LocalDateTime startDateTime,
-                                                           @RequestParam(required = false) LocalDateTime endDateTime,
+    @GetMapping(path = PATH_SEARCH)
+    public ResponseEntity<List<AnimalResponse>> getAnimals(@RequestParam(required = false) Instant startDateTime,
+                                                           @RequestParam(required = false) Instant endDateTime,
                                                            @RequestParam(required = false) Integer chipperId,
                                                            @RequestParam(required = false) Long chippingLocationId,
                                                            @RequestParam(required = false) LifeStatus lifeStatus,
                                                            @RequestParam(required = false) Gender gender,
                                                            @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        if (chipperId < 1) {
+        if (chipperId != null && chipperId < 1) {
             throw new InvalidValueException("chipperId can't be less than 1");
         }
-        if (chippingLocationId < 1) {
+        if (chippingLocationId != null && chippingLocationId < 1) {
             throw new InvalidValueException("chippingLocationId can't be less than 1");
         }
         var criteria = AnimalSearchCriteria.builder()
@@ -93,8 +96,8 @@ public class AnimalController {
 
     @GetMapping(path = "/{animalId}/locations")
     public ResponseEntity<List<VisitedLocation>> getVisitedLocations(@PathVariable("animalId") @Min(1) Long animalId,
-                                                                     @RequestParam(required = false) LocalDateTime startDateTime,
-                                                                     @RequestParam(required = false) LocalDateTime endDateTime,
+                                                                     @RequestParam(required = false) Instant startDateTime,
+                                                                     @RequestParam(required = false) Instant endDateTime,
                                                                      @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                                      @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         var criteria = VisitedLocationSearchCriteria.builder()

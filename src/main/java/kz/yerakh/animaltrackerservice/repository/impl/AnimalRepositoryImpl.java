@@ -13,7 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     private static final String LIMIT_AND_OFFSET = " ORDER BY animal_id LIMIT ? OFFSET ?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final Clock clock;
 
     @Override
     public Optional<Animal> find(Long animalId) {
@@ -64,12 +66,12 @@ public class AnimalRepositoryImpl implements AnimalRepository {
         var where = new StringBuilder(WHERE);
         if (payload.startDateTime() != null) {
             where.append(CHIPPING_DATE_GREATER_THAN);
-            params.add(payload.startDateTime());
+            params.add(Timestamp.from(payload.startDateTime()));
         }
         if (payload.endDateTime() != null) {
             Utils.appendAndIfNeeded(where);
             where.append(CHIPPING_DATE_LOWER_THAN);
-            params.add(payload.endDateTime());
+            params.add(Timestamp.from(payload.endDateTime()));
         }
         if (payload.chipperId() != null) {
             Utils.appendAndIfNeeded(where);
@@ -105,17 +107,17 @@ public class AnimalRepositoryImpl implements AnimalRepository {
 
     @Override
     public Long save(AnimalRequest payload) {
+        var now = Timestamp.from(Instant.now(clock));
         return jdbcTemplate.queryForObject(INSERT, Long.class, payload.weight(), payload.length(), payload.height(),
-                payload.gender().name(), LifeStatus.ALIVE.name(), Timestamp.valueOf(LocalDateTime.now()),
-                payload.chipperId(), payload.chippingLocationId());
+                payload.gender().name(), LifeStatus.ALIVE.name(), now, payload.chipperId(), payload.chippingLocationId());
     }
 
     @Override
     public int update(Long animalId, AnimalUpdateRequest payload) {
         if (LifeStatus.DEAD.equals(payload.lifeStatus())) {
+            var now = Timestamp.from(Instant.now(clock));
             return jdbcTemplate.update(UPDATE_DEAD, payload.weight(), payload.length(), payload.height(), payload.gender().name(),
-                    payload.lifeStatus().name(), payload.chipperId(), payload.chippingLocationId(),
-                    Timestamp.valueOf(LocalDateTime.now()), animalId);
+                    payload.lifeStatus().name(), payload.chipperId(), payload.chippingLocationId(), now, animalId);
         }
         return jdbcTemplate.update(UPDATE, payload.weight(), payload.length(), payload.height(), payload.gender().name(),
                 payload.lifeStatus().name(), payload.chipperId(), payload.chippingLocationId(), animalId);

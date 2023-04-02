@@ -3,13 +3,13 @@ package kz.yerakh.animaltrackerservice.dto;
 import kz.yerakh.animaltrackerservice.model.Animal;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Builder(builderMethodName = "internalBuilder")
 public record AnimalResponse(Long id, List<Long> animalTypes, Float weight, Float length, Float height,
-                             Gender gender, LifeStatus lifeStatus, LocalDateTime chippingDateTime, Integer chipperId,
-                             Long chippingLocationId, List<Long> visitedLocations, LocalDateTime deathDateTime) {
+                             Gender gender, LifeStatus lifeStatus, Instant chippingDateTime, Integer chipperId,
+                             Long chippingLocationId, List<Long> visitedLocations, Instant deathDateTime) {
 
     public static AnimalResponse.AnimalResponseBuilder builder(Animal animal) {
         return internalBuilder()
